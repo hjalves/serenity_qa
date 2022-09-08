@@ -1,0 +1,34 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <title>SerenityOS Q&A</title>
+</head>
+<body>
+<aside>
+  <nav>
+    <ul>
+      <li class="title">SerenityOS Q&A</li>
+      <li><a href="{% url 'index' %}">Home</a></li>
+      <li>About</li>
+    </ul>
+    <ul>
+      <li class="title">Office hours</li>
+      {% for video in videos %}
+        <li><a href="{% url 'video' video.id %}">{{ video.published }}</a></li>
+      {% endfor %}
+    </ul>
+    <ul>
+      <li class="title">Search</li>
+    </ul>
+{#    <input type="text" id="search" name="search">#}
+  </nav>
+</aside>
+<main class="content">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

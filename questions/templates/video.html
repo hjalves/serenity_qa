@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static questions_extras %}
+
+{% block content %}
+  {% for question in questions %}
+    <article class="question">
+      <div class="question-header">
+        <a class="title" href="#">{{ question.video.title }}</a>
+        <a class="duration"
+           href="#">{{ question.duration|format_duration|default:"--" }}</a>
+      </div>
+      <div class="question-body">
+        <div class="timestamp">
+          <a href="{{ question.url }}">{{ question.timestamp }}</a>
+        </div>
+        <div class="content">
+          {{ question.question }}
+        </div>
+      </div>
+      <div class="question-footer">
+        <div class="tags">
+          {% for tag in question.tags.all %}<a class="tag">{{ tag.name }}</a>{% endfor %}
+        </div>
+        <div class="clear"></div>
+      </div>
+    </article>
+  {% endfor %}
+{% endblock %}

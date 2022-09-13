@@ -8,4 +8,3 @@ class DurationWidget(TextInput):
 
     def __init__(self, attrs=None):
         super().__init__(attrs={'class': 'html-duration-picker', **(attrs or {})})
-

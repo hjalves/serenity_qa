@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # Third-party
     'django_extensions',
     "django_better_admin_arrayfield",
+    "django_htmx",
     # Project
     'serenity_qa.apps.MyAdminConfig',
     'questions',
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'serenity_qa.urls'
@@ -122,13 +124,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / "static"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-DOWNLOAD_DIR = MEDIA_ROOT / "videos"
+DOWNLOAD_DIR = MEDIA_ROOT / "yt_dlp"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

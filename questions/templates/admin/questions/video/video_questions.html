@@ -1,0 +1,111 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+table#video-questions-table {
+  width: 100%;
+}
+
+table#video-questions-table td.shrink, table th.shrink{
+  white-space: nowrap
+}
+
+table#video-questions-table td.expand, table th.expand {
+  width: 99%
+}
+
+tr.htmx-swapping td, tr.htmx-swapping th {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+input[type=submit].submit-question {
+    padding: 6px;
+}
+
+</style>
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+{{ media }}
+<script src="{% static 'js/htmx.min.js' %}" defer></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ module_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">{{ object|truncatewords:"18" }}</a>
+&rsaquo; Questions
+</div>
+{% endblock %}
+
+
+{% block content %}
+<div id="content-main">
+<iframe id="player" type="text/html" width="640" height="390"
+        src="{{ embed_url }}"
+        frameborder="0"></iframe>
+</div>
+
+<hr>
+
+<h2>Questions</h2>
+
+<form hx-post="/admin/htmx/video/{{video.id}}/questions/"
+      hx-target="#video-questions"
+      hx-vals='js:{timestamp: secondsToDuration(player.getCurrentTime())}'>
+  {% csrf_token %}
+  {{ form }}
+  <input class="submit-question" type="submit" value="Add">
+</form>
+<div id="video-questions">
+{% include "admin/questions/video/question_list_partial.html" %}
+</div>
+
+<script>
+const secondsToDuration = (value, hideSeconds) => {
+    let secondsValue = Math.floor(value);
+    const hours = Math.floor(secondsValue / 3600);
+    secondsValue %= 3600;
+    const minutes = Math.floor(secondsValue / 60);
+    const seconds = secondsValue % 60;
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+    return hideSeconds
+      ? `${formattedHours}:${formattedMinutes}`
+      : `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  };
+</script>
+
+<script>
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var timestampInputEl = document.getElementById('id_timestamp');
+  var player;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+    });
+  }
+  function onPlayerReady(event) {
+    console.log("on player ready");
+    console.log(event);
+  }
+  function onPlayerStateChange(event) {
+    console.log(event);
+    var currentTime = Math.floor(player.getCurrentTime());
+    timestampInputEl.value = secondsToDuration(currentTime);
+  }
+</script>
+{% endblock %}

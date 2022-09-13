@@ -3,6 +3,7 @@ import json
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 from questions.download import youtube_dl_download
 
@@ -10,7 +11,6 @@ from questions.download import youtube_dl_download
 class Video(models.Model):
     code = models.CharField(max_length=12, unique=True)
     title = models.CharField(max_length=200, blank=True)
-    url = models.URLField("URL", blank=True)
     published = models.DateField(null=True, blank=True)
     duration = models.DurationField(blank=True, null=True)
 
@@ -22,14 +22,22 @@ class Video(models.Model):
     def __str__(self):
         return self.title or self.code
 
+    def questions(self):
+        return self.question_set.order_by("-timestamp")
+
     def metadata(self):
         info_file = settings.DOWNLOAD_DIR / f"{self.code}.info.json"
         return json.loads(info_file.read_text())
 
-    def download(self, skip_video=False):
+    def download(self, skip_video=False, only_audio=True):
         directory = settings.DOWNLOAD_DIR
         directory.mkdir(parents=True, exist_ok=True)
-        youtube_dl_download(self.url, download_dir=directory, skip_download=skip_video)
+        youtube_dl_download(
+            self.url,
+            download_dir=directory,
+            skip_download=skip_video,
+            only_audio=only_audio,
+        )
 
     def fill_metadata(self, download=True):
         try:
@@ -46,13 +54,16 @@ class Video(models.Model):
         self.duration = datetime.timedelta(seconds=metadata["duration"])
         self.save()
 
-    def save(self, *a, **kw):
-        if not self.url:
-            self.url = f"https://www.youtube.com/watch?v={self.code}"
-        super().save(*a, **kw)
-
     def build_url(self, timestamp=None):
         return "{}&t={}s".format(self.url, int(timestamp.total_seconds()))
+
+    @property
+    def url(self):
+        return f"https://www.youtube.com/watch?v={self.code}"
+
+    @property
+    def embed_url(self):
+        return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
 
 
 class Tag(models.Model):
@@ -83,12 +94,16 @@ class Question(models.Model):
             "video__published",
             "timestamp",
         )
+        unique_together = ("video", "timestamp")
 
     def __str__(self):
         return f"[{self.timestamp}] {self.question_trunc()}"
 
     def question_trunc(self):
         return self.question[:80] + "..." if len(self.question) > 80 else self.question
+
+    def admin_url(self):
+        return reverse("admin:questions_question_change", args=(self.pk,))
 
     def url(self):
         return self.video.build_url(self.timestamp)

@@ -15,23 +15,41 @@ from django.utils.http import urlencode
 from django.utils.text import capfirst
 
 from questions.forms import VideoQuestionForm
-from questions.models import Video, Tag, Question
+from questions.models import Video, Tag, Question, LiveChatMessage
 from questions.widgets import DurationWidget
 
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "link", "published", "questions", "duration")
-    actions = ("download", "fill_metadata", "download_subtitles")
-    readonly_fields = ("link", "questions", "existing_files", "media_files")
+    list_display = (
+        "__str__",
+        "link",
+        "published",
+        "questions",
+        "duration",
+        "livechat_messages",
+    )
+    actions = ("download", "fill_metadata", "download_subtitles", "build_livechat")
+    readonly_fields = (
+        "link",
+        "questions",
+        "livechat_messages",
+        "existing_files",
+        "media_files",
+    )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(question_count=Count("question"))
+        qs = qs.annotate(
+            question_count=Count("question", distinct=True),
+            livechat_message_count=Count("livechatmessage", distinct=True),
+        )
+        print(qs.query)
+        return qs
 
     def existing_files(self, obj):
-        return ', '.join(obj.existing_files()) or '-'
+        return ", ".join(obj.existing_media_files()) or "-"
 
     existing_files.short_description = "Existing files"
 
@@ -47,6 +65,23 @@ class VideoAdmin(admin.ModelAdmin):
 
     questions.admin_order_field = "question_count"
 
+    def livechat_messages(self, obj):
+        if obj.id:
+            params = {"video__id__exact": obj.id}
+            query_url = (
+                reverse("admin:questions_livechatmessage_changelist")
+                + "?"
+                + urlencode(params)
+            )
+            return format_html(
+                "<a href='{url}'>{count}</a>",
+                url=query_url,
+                count=obj.livechat_message_count,
+            )
+
+    livechat_messages.admin_order_field = "livechat_message_count"
+    livechat_messages.short_description = "livechat"
+
     def link(self, obj):
         return format_html("<a href='{url}'>{url}</a>", url=obj.url)
 
@@ -55,9 +90,8 @@ class VideoAdmin(admin.ModelAdmin):
         return format_html("<a href='{url}'>{url}</a>", url=audio_url)
 
     def media_files(self, obj):
-        # urls = [('audio', obj.audio_url()), ]
         urls = obj.existing_media_files().items()
-        return format_html_join('\n', "<a href='{1}'>{0}: {1}</a><br>", urls)
+        return format_html_join("\n", "<a href='{1}'>{0}: {1}</a><br>", urls)
 
     # Actions
 
@@ -78,6 +112,12 @@ class VideoAdmin(admin.ModelAdmin):
             obj.download(skip_video=True, live_chat=True, subtitles=True)
 
     download_subtitles.short_description = "Download subtitles and live chat"
+
+    def build_livechat(self, request, queryset):
+        for obj in queryset.all():
+            obj.build_livechat_questions()
+
+    build_livechat.short_description = "Build livechat questions"
 
     def get_urls(self):
         from django.urls import path
@@ -212,3 +252,13 @@ class QuestionAdmin(admin.ModelAdmin):
             obj.generate_audio()
 
     generate_audio.short_description = "Generate audio"
+
+
+@admin.register(LiveChatMessage)
+class LiveChatMessageAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "_published", )
+
+    def _published(self, obj):
+        return obj.video.published
+
+    _published.admin_order_field = "video__published"

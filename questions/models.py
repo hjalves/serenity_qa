@@ -8,7 +8,7 @@ from django.db import models
 from django.urls import reverse
 
 from questions.download import youtube_dl_download
-from questions.sound import trim_audio_file
+from questions.utils import trim_audio_file, parse_jsonl_live_chat
 
 
 class Video(models.Model):
@@ -28,15 +28,10 @@ class Video(models.Model):
     def questions(self):
         return self.question_set.order_by("-timestamp")
 
-    def metadata(self):
-        info_file = settings.DOWNLOAD_DIR / f"{self.code}.info.json"
-        return json.loads(info_file.read_text())
-
-    def live_chat(self):
-        info_file = settings.DOWNLOAD_DIR / f"{self.code}.live_chat.json"
-        return json.loads(info_file.read_text())
-
     def existing_media_files(self):
+        if not self.code:
+            return {}
+
         parent_dir = settings.DOWNLOAD_DIR
         media_dir = settings.DOWNLOAD_URL
 
@@ -52,6 +47,14 @@ class Video(models.Model):
             ("live_chat", parent_dir / chat_file, urljoin(media_dir, chat_file)),
         ]
         return {file_type: url for file_type, path, url in media_files if path.exists()}
+
+    def metadata(self):
+        info_file = settings.DOWNLOAD_DIR / f"{self.code}.info.json"
+        return json.loads(info_file.read_text())
+
+    def live_chat(self):
+        info_file = settings.DOWNLOAD_DIR / f"{self.code}.live_chat.json"
+        return parse_jsonl_live_chat(info_file)
 
     def audio_path(self):
         if self.code:
@@ -100,6 +103,17 @@ class Video(models.Model):
     @property
     def embed_url(self):
         return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
+
+    def build_livechat_questions(self):
+        self.livechatmessage_set.all().delete()
+        livechat_questions = self.live_chat()
+        for question in livechat_questions:
+            LiveChatMessage.objects.create(
+                video=self,
+                timestamp=question["timestamp"],
+                author=question["author"],
+                message=question["message"],
+            )
 
 
 class Tag(models.Model):
@@ -191,3 +205,24 @@ class Question(models.Model):
         with path.open(mode="rb") as f:
             self.audio_file = File(f, name=path.name)
             self.save()
+
+
+class LiveChatMessage(models.Model):
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    timestamp = models.DurationField()
+    author = models.CharField(max_length=100)
+    message = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"[{self.timestamp}] {self.author}: {self.message_trunc()}"
+
+    def message_trunc(self):
+        return self.message[:80] + "..." if len(self.message) > 80 else self.message
+
+    class Meta:
+        verbose_name = "livechat message"
+        verbose_name_plural = "livechat messages"
+        ordering = (
+            "video__published",
+            "timestamp",
+        )

@@ -22,23 +22,30 @@ def youtube_dl_download(
     skip_download=False,
     progress_hooks=None,
     only_audio=False,
+    live_chat=False,
+    subtitles=False,
 ):
     download_dir = Path(download_dir or "./media/")
     progress_hooks = progress_hooks or [my_hook]
     out_template = str((download_dir / "%(id)s.%(ext)s").resolve())
+
     ydl_opts = {
         "outtmpl": out_template,
         "logger": logger,
         "writeinfojson": info,
         "progress_hooks": progress_hooks,
         "skip_download": skip_download,
-        "writeautomaticsub": True,
+        "writesubtitles": True,
+        "subtitleslangs": ["en"],
+        "writeautomaticsub": subtitles,
         "addmetadata": True,
     }
+    if live_chat:
+        ydl_opts["subtitleslangs"] += ["live_chat"]
     if only_audio:
         ydl_opts = {
             **ydl_opts,
-            "format": "bestaudio/best",
+            "format": "251/bestaudio/best",
             "postprocessors": [{"key": "FFmpegExtractAudio"}],
         }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:

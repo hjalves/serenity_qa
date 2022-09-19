@@ -1,13 +1,15 @@
 from functools import update_wrapper
+from urllib.parse import urljoin
 
 from django import forms
 from django.contrib import admin
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models import Count
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.contrib.admin.utils import unquote
 from django.utils.http import urlencode
 from django.utils.text import capfirst
@@ -20,27 +22,44 @@ from questions.widgets import DurationWidget
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
     list_display = ("__str__", "link", "published", "questions", "duration")
-    actions = ("download", "fill_metadata")
-    readonly_fields = ("link", "questions")
+    actions = ("download", "fill_metadata", "download_subtitles")
+    readonly_fields = ("link", "questions", "existing_files", "media_files")
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.annotate(question_count=Count("question"))
 
+    def existing_files(self, obj):
+        return ', '.join(obj.existing_files()) or '-'
+
+    existing_files.short_description = "Existing files"
+
     def questions(self, obj):
-        params = {"video__id__exact": obj.id}
-        query_url = (
-            reverse("admin:questions_question_changelist") + "?" + urlencode(params)
-        )
-        return format_html(
-            "<a href='{url}'>{count}</a>", url=query_url, count=obj.question_count
-        )
+        if obj.id:
+            params = {"video__id__exact": obj.id}
+            query_url = (
+                reverse("admin:questions_question_changelist") + "?" + urlencode(params)
+            )
+            return format_html(
+                "<a href='{url}'>{count}</a>", url=query_url, count=obj.question_count
+            )
 
     questions.admin_order_field = "question_count"
 
     def link(self, obj):
         return format_html("<a href='{url}'>{url}</a>", url=obj.url)
+
+    def audio(self, obj):
+        audio_url = obj.audio_url()
+        return format_html("<a href='{url}'>{url}</a>", url=audio_url)
+
+    def media_files(self, obj):
+        # urls = [('audio', obj.audio_url()), ]
+        urls = obj.existing_media_files().items()
+        return format_html_join('\n', "<a href='{1}'>{0}: {1}</a><br>", urls)
+
+    # Actions
 
     def download(self, request, queryset):
         for obj in queryset.all():
@@ -53,6 +72,12 @@ class VideoAdmin(admin.ModelAdmin):
             obj.fill_metadata()
 
     fill_metadata.short_description = "Fill metadata"
+
+    def download_subtitles(self, request, queryset):
+        for obj in queryset.all():
+            obj.download(skip_video=True, live_chat=True, subtitles=True)
+
+    download_subtitles.short_description = "Download subtitles and live chat"
 
     def get_urls(self):
         from django.urls import path
@@ -147,12 +172,12 @@ class QuestionForm(forms.ModelForm):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     form = QuestionForm
-    list_display = ("__str__", "_timestamp_link", "_published", "_tags")
+    list_display = ("__str__", "_timestamp_link", "duration", "_published", "_tags")
     list_filter = ("video", "tags")
-    readonly_fields = ("_url", "duration")
+    readonly_fields = ("_url", "duration", "audio_file")
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
     ordering = ("-id",)
-    actions = ("update_duration",)
+    actions = ("update_duration", "generate_audio")
 
     def _tags(self, obj):
         return ", ".join(map(str, obj.tags.all()))
@@ -181,3 +206,9 @@ class QuestionAdmin(admin.ModelAdmin):
             obj.save(update_fields=["duration"])
 
     update_duration.short_description = "Update duration"
+
+    def generate_audio(self, request, queryset):
+        for obj in queryset.all():
+            obj.generate_audio()
+
+    generate_audio.short_description = "Generate audio"

@@ -3,15 +3,17 @@
 
 {% block content %}
   {% for question in questions %}
-    <article class="question">
+    <article id="{{ question.element_id }}" class="question">
       <div class="question-header">
-        <a class="title" href="#">{{ question.video.title }}</a>
-        <a class="duration"
+        <a class="title" title="Click to bookmark"
+           href="#{{ question.element_id }}">{{ question.video.title }}</a>
+        <a class="duration" title="Duration"
            href="#">{{ question.duration|format_duration|default:"--" }}</a>
       </div>
       <div class="question-body">
         <div class="timestamp">
-          <a href="{{ question.url }}">{{ question.timestamp }}</a>
+          <a title="Watch in YouTube"
+             href="{{ question.url }}">{{ question.timestamp }}</a>
         </div>
         <div class="content">
           {{ question.question }}
@@ -19,7 +21,8 @@
       </div>
       <div class="question-footer">
         <div class="tags">
-          {% for tag in question.tags.all %}<a class="tag">{{ tag.name }}</a>{% endfor %}
+          {% for tag in question.tags.all %}
+            <a class="tag">{{ tag.name }}</a>{% endfor %}
         </div>
         <div class="clear"></div>
       </div>

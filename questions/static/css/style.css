@@ -103,8 +103,11 @@ main.content {
     font-size: 0.8em;
     border-bottom: 1px solid #ddd;
     background: #bbb;
-
     align-items: center;
+}
+
+.question:target .question-header {
+    background: #666;
 }
 
 .question-header .title {

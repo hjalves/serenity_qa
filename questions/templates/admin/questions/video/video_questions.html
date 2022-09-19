@@ -2,6 +2,7 @@
 {% load i18n admin_urls static %}
 
 {% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
 <style>
 table#video-questions-table {
   width: 100%;
@@ -23,7 +24,6 @@ tr.htmx-swapping td, tr.htmx-swapping th {
 input[type=submit].submit-question {
     padding: 6px;
 }
-
 </style>
 {% endblock %}
 
@@ -45,22 +45,25 @@ input[type=submit].submit-question {
 
 {% block content %}
 <div id="content-main">
-<iframe id="player" type="text/html" width="640" height="390"
-        src="{{ embed_url }}"
-        frameborder="0"></iframe>
+<iframe id="player" type="text/html" width="800" height="480"
+        src="{{ embed_url }}" frameborder="0"></iframe>
 </div>
 
 <hr>
 
 <h2>Questions</h2>
-
+<fieldset class="module aligned">
+<div class="form-row">
 <form hx-post="/admin/htmx/video/{{video.id}}/questions/"
       hx-target="#video-questions"
       hx-vals='js:{timestamp: secondsToDuration(player.getCurrentTime())}'>
   {% csrf_token %}
   {{ form }}
-  <input class="submit-question" type="submit" value="Add">
+  <input class="submit-question" type="submit" value="Add at current timestamp">
 </form>
+</div>
+</fieldset>
+
 <div id="video-questions">
 {% include "admin/questions/video/question_list_partial.html" %}
 </div>

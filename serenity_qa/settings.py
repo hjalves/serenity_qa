@@ -133,6 +133,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
 DOWNLOAD_DIR = MEDIA_ROOT / "yt_dlp"
+DOWNLOAD_URL = MEDIA_URL + "yt_dlp/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

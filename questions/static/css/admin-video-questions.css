@@ -1,0 +1,49 @@
+table#video-questions-table {
+  width: 100%;
+}
+
+table#video-questions-table td.shrink, table th.shrink{
+  white-space: nowrap
+}
+
+table#video-questions-table td.expand, table th.expand {
+  width: 99%
+}
+
+tr.htmx-swapping td, tr.htmx-swapping th {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+input[type=submit].submit-question {
+    padding: 6px;
+}
+
+ul.actionlist li {
+    list-style-type: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#content-related .actionlist li.message {
+    line-height: 1.2;
+    margin-bottom: 10px;
+    padding-left: 0;
+}
+
+#livechat-module {
+    overflow: auto;
+    max-height: 600px;
+    border: 1px solid var(--hairline-color);
+    margin-bottom: 0;
+}
+
+#video-questions {
+    float:left;
+    margin-top: 20px;
+    width: 100%;
+}
+
+#player {
+    width: 100%;
+}

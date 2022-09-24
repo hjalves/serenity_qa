@@ -3,28 +3,7 @@
 
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
-<style>
-table#video-questions-table {
-  width: 100%;
-}
-
-table#video-questions-table td.shrink, table th.shrink{
-  white-space: nowrap
-}
-
-table#video-questions-table td.expand, table th.expand {
-  width: 99%
-}
-
-tr.htmx-swapping td, tr.htmx-swapping th {
-  opacity: 0;
-  transition: opacity 0.5s ease-out;
-}
-
-input[type=submit].submit-question {
-    padding: 6px;
-}
-</style>
+<link rel="stylesheet" href="{% static "css/admin-video-questions.css" %}">
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
@@ -42,27 +21,40 @@ input[type=submit].submit-question {
 </div>
 {% endblock %}
 
+{% block coltype %}colMS{% endblock %}
 
 {% block content %}
 <div id="content-main">
-<iframe id="player" type="text/html" width="800" height="480"
-        src="{{ embed_url }}" frameborder="0"></iframe>
+  <iframe id="player" type="text/html" width="700" height="400"
+          src="{{ embed_url }}" frameborder="0"></iframe>
+
+  <h2>Questions</h2>
+  <div class="form-row">
+    <form hx-post="/admin/htmx/video/{{video.id}}/questions/"
+          hx-target="#video-questions"
+          hx-vals='js:{timestamp: secondsToDuration(player.getCurrentTime())}'>
+      {% csrf_token %}
+      {{ form }}
+      <input class="submit-question" type="submit" value="Add at current timestamp">
+    </form>
+  </div>
 </div>
 
-<hr>
 
-<h2>Questions</h2>
-<fieldset class="module aligned">
-<div class="form-row">
-<form hx-post="/admin/htmx/video/{{video.id}}/questions/"
-      hx-target="#video-questions"
-      hx-vals='js:{timestamp: secondsToDuration(player.getCurrentTime())}'>
-  {% csrf_token %}
-  {{ form }}
-  <input class="submit-question" type="submit" value="Add at current timestamp">
-</form>
+<div id="content-related">
+  <div class="module" id="livechat-module">
+    <h2>Livestream Chat</h2>
+    <h3>Messages</h3>
+    <ul class="actionlist">
+      {% for message in video.livechatmessage_set.all %}
+      <li class="message">
+        {{ message }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
-</fieldset>
+
 
 <div id="video-questions">
 {% include "admin/questions/video/question_list_partial.html" %}

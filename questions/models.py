@@ -171,6 +171,9 @@ class Question(models.Model):
     def admin_url(self):
         return reverse("admin:questions_question_change", args=(self.pk,))
 
+    def admin_delete_url(self):
+        return reverse("admin:questions_question_delete", args=(self.pk,))
+
     def url(self):
         return self.video.build_url(self.timestamp)
 

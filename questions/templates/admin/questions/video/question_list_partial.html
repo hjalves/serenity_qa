@@ -10,22 +10,11 @@
   </thead>
   <tbody>
   {% for question in video.questions %}
-    <tr>
-      <td class="shrink">
-        <a href="{{ question.admin_url }}" class="changelink"></a>
-      </td>
-      <th scope="row" class="shrink"><a
-          href="javascript:player.seekTo({{ question.timestamp.total_seconds }});">{{ question.timestamp }}</a>
-      </th>
-      <td class="expand">{{ question.question | default:"--" }}<a></a></td>
-      <td>
-        <a href="#" class="deletelink"
-           hx-delete="/admin/htmx/video/{{ video.id }}/questions/{{ question.id }}/"
-           hx-target="closest tr"
-           hx-confirm="Delete this question?"
-           hx-swap="delete swap:0.5s"></a>
-      </td>
-    </tr>
+    {% if question == editing_question %}
+      {% include "admin/questions/video/question_detail_partial.html" with edit=True %}
+    {% else %}
+      {% include "admin/questions/video/question_detail_partial.html" %}
+    {% endif %}
   {% endfor %}
   </tbody>
 </table>

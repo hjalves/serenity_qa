@@ -45,7 +45,6 @@ class VideoAdmin(admin.ModelAdmin):
             question_count=Count("question", distinct=True),
             livechat_message_count=Count("livechatmessage", distinct=True),
         )
-        print(qs.query)
         return qs
 
     def existing_files(self, obj):

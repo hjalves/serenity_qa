@@ -108,9 +108,9 @@ class VideoAdmin(admin.ModelAdmin):
 
     def download_subtitles(self, request, queryset):
         for obj in queryset.all():
-            obj.download(skip_video=True, live_chat=True, subtitles=True)
+            obj.download(skip_video=True, only_audio=False, live_chat=True, subtitles=True)
 
-    download_subtitles.short_description = "Download subtitles and live chat"
+    download_subtitles.short_description = "Download subtitles, live chat"
 
     def build_livechat(self, request, queryset):
         for obj in queryset.all():

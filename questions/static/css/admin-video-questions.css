@@ -42,6 +42,11 @@ ul.actionlist li {
     text-overflow: ellipsis;
 }
 
+#content-related {
+    position: sticky;
+    top: 20px;
+}
+
 #content-related .actionlist li.message {
     line-height: 1.2;
     margin-bottom: 10px;
@@ -50,15 +55,29 @@ ul.actionlist li {
 
 #livechat-module {
     overflow: auto;
-    max-height: 600px;
     border: 1px solid var(--hairline-color);
     margin-bottom: 0;
+    max-height: calc(100vh - 180px);
 }
 
 #video-questions {
     float: left;
     margin-top: 20px;
     width: 100%;
+}
+
+@media (max-width: 768px) {
+    #content-related {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    #livechat-module {
+        max-height: 400px;
+    }
+
+    #video-questions {
+        margin-top: 40px;
+    }
 }
 
 #player {

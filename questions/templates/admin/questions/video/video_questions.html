@@ -89,11 +89,12 @@
       var player;
 
       function fillQuestion(target) {
+          target.style = "background-color: lightyellow";
           const message = target.dataset.message;
-          console.log(message);
           const edit_input = document.getElementById("id_edit_question");
-          if (edit_input)
-              edit_input.value = message;
+          if (edit_input) {
+              edit_input.value += message;
+          }
           return false;
       }
 

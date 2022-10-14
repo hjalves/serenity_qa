@@ -45,7 +45,8 @@ def youtube_dl_download(
     if only_audio:
         ydl_opts = {
             **ydl_opts,
-            "format": "251/bestaudio/best",
+            # "format": "251/bestaudio/best"
+            "format": "251",
             "postprocessors": [{"key": "FFmpegExtractAudio"}],
         }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:

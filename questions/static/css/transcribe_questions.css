@@ -1,3 +1,7 @@
+iframe {
+    border: none;
+}
+
 table#video-questions-table {
     width: 100%;
 }
@@ -42,6 +46,10 @@ ul.actionlist li {
     text-overflow: ellipsis;
 }
 
+.highlighted {
+    background-color: var(--selected-row);
+}
+
 #content-related {
     position: sticky;
     top: 20px;
@@ -71,6 +79,7 @@ ul.actionlist li {
         position: relative;
         margin-bottom: 20px;
     }
+
     #livechat-module {
         max-height: 400px;
     }

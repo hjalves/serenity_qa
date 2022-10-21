@@ -1,26 +1,20 @@
-from functools import update_wrapper
-from urllib.parse import urljoin
-
 from django import forms
 from django.contrib import admin
-from django.conf import settings
-from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models import Count
-from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join
-from django.contrib.admin.utils import unquote
 from django.utils.http import urlencode
-from django.utils.text import capfirst
+from django_object_actions import DjangoObjectActions
 
+from questions.action_views import action_view
 from questions.forms import VideoQuestionForm
 from questions.models import Video, Tag, Question, LiveChatMessage
 from questions.widgets import DurationWidget
 
 
 @admin.register(Video)
-class VideoAdmin(admin.ModelAdmin):
+class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = (
         "__str__",
         "link",
@@ -29,7 +23,13 @@ class VideoAdmin(admin.ModelAdmin):
         "duration",
         "livechat_messages",
     )
-    actions = ("download", "fill_metadata", "download_subtitles", "build_livechat")
+    actions = (
+        "download",
+        "fill_metadata",
+        "download_subtitles",
+        "build_livechat",
+        "transcribe_questions",
+    )
     readonly_fields = (
         "link",
         "questions",
@@ -38,6 +38,7 @@ class VideoAdmin(admin.ModelAdmin):
         "media_files",
     )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
+    change_actions = ("transcribe_questions",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -108,7 +109,9 @@ class VideoAdmin(admin.ModelAdmin):
 
     def download_subtitles(self, request, queryset):
         for obj in queryset.all():
-            obj.download(skip_video=True, only_audio=False, live_chat=True, subtitles=True)
+            obj.download(
+                skip_video=True, only_audio=False, live_chat=True, subtitles=True
+            )
 
     download_subtitles.short_description = "Download subtitles, live chat"
 
@@ -118,69 +121,14 @@ class VideoAdmin(admin.ModelAdmin):
 
     build_livechat.short_description = "Build livechat questions"
 
-    def get_urls(self):
-        from django.urls import path
-
-        def wrap(view):
-            def wrapper(*args, **kwargs):
-                return self.admin_site.admin_view(view)(*args, **kwargs)
-
-            wrapper.model_admin = self
-            return update_wrapper(wrapper, view)
-
-        info = self.model._meta.app_label, self.model._meta.model_name
-        return [
-            path(
-                "<path:object_id>/questions/",
-                wrap(self.questions_view),
-                name="%s_%s_questions" % info,
-            ),
-            *super().get_urls(),
-        ]
-
-    def questions_view(self, request, object_id, extra_context=None):
-        model = self.model
-        obj = self.get_object(request, unquote(object_id))
-        if obj is None:
-            return self._get_obj_does_not_exist_redirect(
-                request, model._meta, object_id
-            )
-
-        if not self.has_view_or_change_permission(request, obj):
-            raise PermissionDenied
-
-        # Then get the history for this object.
-        opts = model._meta
-        app_label = opts.app_label
-
-        form = VideoQuestionForm(initial={})
-
-        context = {
-            **self.admin_site.each_context(request),
-            "title": "Questions: %s" % obj,
-            "module_name": str(capfirst(opts.verbose_name_plural)),
-            "object": obj,
-            "opts": opts,
-            "media": form.media,
-            "preserved_filters": self.get_preserved_filters(request),
-            "embed_url": obj.embed_url,
-            "form": form,
+    @action_view(
+        label="Video transcription",
+        description="Open a Youtube player and transcribe questions",
+    )
+    def transcribe_questions(self, request, obj):
+        return {
             "video": obj,
-            **(extra_context or {}),
         }
-
-        request.current_app = self.admin_site.name
-
-        return TemplateResponse(
-            request,
-            self.object_history_template
-            or [
-                "admin/%s/%s/video_questions.html" % (app_label, opts.model_name),
-                "admin/%s/video_questions.html" % app_label,
-                "admin/video_questions.html",
-            ],
-            context,
-        )
 
 
 @admin.register(Tag)
@@ -255,7 +203,10 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(LiveChatMessage)
 class LiveChatMessageAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "_published", )
+    list_display = (
+        "__str__",
+        "_published",
+    )
 
     def _published(self, obj):
         return obj.video.published

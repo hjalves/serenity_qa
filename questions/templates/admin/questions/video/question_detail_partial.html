@@ -1,5 +1,4 @@
 {% load static %}
-
 <tr>
   <td class="shrink">
     <a href="{{ question.admin_url }}" class="changelink"></a>
@@ -9,7 +8,7 @@
       href="{{ question.url }}"
       data-timestamp="{{ question.timestamp }}"
       data-timestamp-sec="{{ question.timestamp.total_seconds }}"
-      >{{ question.timestamp }}</a>
+  >{{ question.timestamp }}</a>
   </th>
   <td class="expand">
     {% if edit %}
@@ -38,4 +37,3 @@
        hx-swap="delete swap:0.5s"></a>
   </td>
 </tr>
-

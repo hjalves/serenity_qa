@@ -5,3 +5,5 @@ colorlog>=6.7.0
 pip-tools>=6.8.0
 yt-dlp>=2022.5.18
 django-htmx>=1.12.2
+django-object-actions>=4.0.0
+django-components>=0.22

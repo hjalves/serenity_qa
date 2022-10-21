@@ -101,7 +101,7 @@ class Video(models.Model):
         return f"https://www.youtube.com/watch?v={self.code}"
 
     @property
-    def embed_url(self):
+    def embed_youtube_url(self):
         return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
 
     def build_livechat_questions(self):

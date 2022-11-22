@@ -1,0 +1,8 @@
+{% load i18n admin_urls %}
+<div class="submit-row">
+  <input type="submit" value="Execute" class="default" name="_save">
+  <p class="deletelink-box"><a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}"
+                               class="closelink">Back</a></p>
+  <input type="submit" value="Execute and run another" name="_addanother">
+  <input type="submit" value="Execute and keep values" name="_addanother">
+</div>

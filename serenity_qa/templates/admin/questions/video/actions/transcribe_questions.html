@@ -1,0 +1,53 @@
+{% extends "admin/action.html" %}
+{% load admin_urls static component_tags %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="stylesheet" href="{% static "css/transcribe_questions.css" %}">
+  {% component_css_dependencies %}
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+  <script src="{% static 'js/transcribe_questions.js' %}" defer></script>
+  <script src="https://www.youtube.com/iframe_api" defer></script>
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block content %}
+  <div id="content-main">
+    <iframe id="player" src="{{ video.embed_youtube_url }}"
+            width="700" height="400" allowfullscreen></iframe>
+    <h2>Questions</h2>
+    <div class="form-row">
+      <form hx-post="{% url 'question-list' video.id %}"
+            hx-target="#video-questions"
+            hx-vals='js:{timestamp: secondsToDuration(getCurrentTime())}'
+            hx-swap="outerHTML">
+        {% csrf_token %}
+        <input class="submit-question" type="submit" value="Add at current timestamp">
+      </form>
+    </div>
+  </div>
+
+  <div id="content-related">
+    <div class="module" id="livechat-module">
+      <h2>Livestream Chat</h2>
+      <h3>Messages</h3>
+      <ul class="actionlist">
+        {% for message in video.livechatmessage_set.all %}
+          <li class="message hidden"
+              data-timestamp-sec="{{ message.timestamp.total_seconds }}">
+            <a href="javascript:" data-message="{{ message.message }}"
+               onclick="return fillQuestion(this);">{{ message }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% component "question_list" id="video-questions" video=video %}
+
+{% component_js_dependencies %}
+
+{% endblock %}

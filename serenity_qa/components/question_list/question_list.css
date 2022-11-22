@@ -1,0 +1,33 @@
+table#video-questions-table {
+    width: 100%;
+}
+
+table#video-questions-table td.shrink, table th.shrink {
+    white-space: nowrap;
+}
+
+table#video-questions-table td.expand, table th.expand {
+    width: 99%;
+}
+
+table#video-questions-table td, th {
+    vertical-align: middle;
+}
+
+table#video-questions-table div.edit-question {
+    display: flex;
+}
+
+table#video-questions-table div.edit-question input[type=text] {
+    flex-grow: 1;
+}
+
+table#video-questions-table div.edit-question input[type=submit] {
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+tr.htmx-swapping td, tr.htmx-swapping th {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}

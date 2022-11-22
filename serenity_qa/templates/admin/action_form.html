@@ -1,0 +1,25 @@
+{% extends "admin/action.html" %}
+{% load admin_urls static actions %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block content %}
+  <div id="content-main">
+    <form method="post" id="{{ opts.model_name }}_form" novalidate>
+      {% csrf_token %}
+      <div>
+      {% block field_sets %}
+      {% for fieldset in adminform %}
+        {% include "admin/includes/fieldset.html" %}
+      {% endfor %}
+      {% endblock %}
+
+      {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+      </div>
+    </form>
+  </div>
+{% endblock %}

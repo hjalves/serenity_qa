@@ -1,0 +1,60 @@
+iframe {
+    border: none;
+}
+
+input[type=submit].submit-question {
+    padding: 5px 10px;
+}
+
+ul.actionlist li {
+    list-style-type: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.highlighted {
+    background-color: var(--selected-row);
+}
+
+#content-related {
+    position: sticky;
+    top: 20px;
+}
+
+#content-related .actionlist li.message {
+    line-height: 1.2;
+    margin-bottom: 10px;
+    padding-left: 0;
+}
+
+#livechat-module {
+    overflow: auto;
+    border: 1px solid var(--hairline-color);
+    margin-bottom: 0;
+    max-height: calc(100vh - 180px);
+}
+
+#video-questions {
+    float: left;
+    margin-top: 20px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    #content-related {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    #livechat-module {
+        max-height: 400px;
+    }
+
+    #video-questions {
+        margin-top: 40px;
+    }
+}
+
+#player {
+    width: 100%;
+}

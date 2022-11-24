@@ -8,3 +8,5 @@ django-htmx>=1.12.2
 django-object-actions>=4.0.0
 django-components>=0.22
 django-render-block>=0.9.2
+whitenoise==6.2.0
+ffmpeg==1.4

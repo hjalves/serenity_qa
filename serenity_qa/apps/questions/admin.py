@@ -8,10 +8,10 @@ from django.utils.html import format_html, format_html_join
 from django.utils.http import urlencode
 from django_object_actions import DjangoObjectActions
 
-from .action_views import action_view
 from .forms import VideoQuestionForm, VideoTaskForm
 from .models import Video, Tag, Question, LiveChatMessage
 from .widgets import DurationWidget
+from ..admin_actions.decorators import action_view
 
 
 @admin.register(Video)
@@ -35,7 +35,6 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "link",
         "questions",
         "livechat_messages",
-        "existing_files",
         "media_files",
     )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
@@ -48,11 +47,6 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             livechat_message_count=Count("livechatmessage", distinct=True),
         )
         return qs
-
-    def existing_files(self, obj):
-        return ", ".join(obj.existing_media_files()) or "-"
-
-    existing_files.short_description = "Existing files"
 
     def questions(self, obj):
         if obj.id:
@@ -137,13 +131,13 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         form = VideoTaskForm(initial=data)
 
         fieldsets = [(None, {"fields": ['task_name', 'arguments']})]
-        adminform = AdminForm(form, fieldsets, {})
+        admin_form = AdminForm(form, fieldsets, {})
         if request.method == 'POST':
-            adminform = None
+            admin_form = None
 
         return {
             "subtitle": "Choose a task to run",
-            "adminform": adminform,
+            "adminform": admin_form,
             "content": "very cool"
         }
 

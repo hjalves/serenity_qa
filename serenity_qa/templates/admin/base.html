@@ -1,8 +1,15 @@
 {% extends 'admin/base.html' %}
 {% load static %}
 
-{% block dark-mode-vars %}{% endblock %}
+{% block dark-mode-vars %}
+  <script src="{% static "js/admin_theme.js" %}" defer></script>
+{% endblock %}
 
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" href="{% static 'css/admin_theme.css' %}">
+{% endblock %}
+
+{% block userlinks %}
+{{ block.super }}
+{% include "admin/color_theme_toggle.html" %}
 {% endblock %}

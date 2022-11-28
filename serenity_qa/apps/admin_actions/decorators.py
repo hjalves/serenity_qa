@@ -50,8 +50,10 @@ def action_view(
 
             context.update(ret)
             context_template = context.get("template")
-            if not context_template and context.get('adminform'):
-                context_template = "admin/action_form.html"
+
+            fallback_template = "admin/action.html"
+            if context.get("adminform"):
+                fallback_template = "admin/action_form.html"
 
             return TemplateResponse(
                 request,
@@ -62,6 +64,7 @@ def action_view(
                     % (app_label, opts.model_name, tool_name),
                     "admin/%s/actions/%s.html" % (app_label, tool_name),
                     "admin/actions/%s.html" % tool_name,
+                    fallback_template,
                 ],
                 context,
             )

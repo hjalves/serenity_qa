@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django_htmx",
     # Project
     "serenity_qa.admin.MyAdminConfig",
+    "serenity_qa.apps.admin_actions",
     "serenity_qa.apps.questions",
 ]
 

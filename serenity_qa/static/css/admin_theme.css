@@ -1,4 +1,4 @@
-:root {
+html[data-theme="light"], :root {
     --primary: #444444;
     --secondary: #111111;
     --accent: #ffffff;
@@ -50,56 +50,116 @@
     --object-tools-hover-bg: var(--close-button-hover-bg);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --primary: #393939;
-        --secondary: #2b2b2b;
-        --accent: #fff;
-        --primary-fg: #eee;
+html[data-theme="dark"] {
+    --primary: #393939;
+    --secondary: #2b2b2b;
+    --accent: #fff;
+    --primary-fg: #eee;
 
-        --body-fg: #eeeeee;
-        --body-bg: #121212;
-        --body-quiet-color: #e0e0e0;
-        --body-loud-color: #ffffff;
+    --body-fg: #eeeeee;
+    --body-bg: #121212;
+    --body-quiet-color: #e0e0e0;
+    --body-loud-color: #ffffff;
 
-        --header-color: #ffc;
-        --header-branding-color: var(--accent);
-        --header-bg: var(--secondary);
-        --header-link-color: var(--primary-fg);
+    --header-color: #ffc;
+    --header-branding-color: var(--accent);
+    --header-bg: var(--secondary);
+    --header-link-color: var(--primary-fg);
 
-        --breadcrumbs-fg: #c4dce8;
-        --breadcrumbs-link-fg: #e0e0e0;
-        --breadcrumbs-bg: var(--primary);
+    --breadcrumbs-fg: #c4dce8;
+    --breadcrumbs-link-fg: #e0e0e0;
+    --breadcrumbs-bg: var(--primary);
 
-        --link-fg: #81d4fa;
-        --link-hover-color: #4ac1f7;
-        --link-selected-fg: #6f94c6;
+    --link-fg: #81d4fa;
+    --link-hover-color: #4ac1f7;
+    --link-selected-fg: #6f94c6;
 
-        --hairline-color: #272727;
-        --border-color: #353535;
+    --hairline-color: #272727;
+    --border-color: #353535;
 
-        --error-fg: #e35f5f;
+    --error-fg: #e35f5f;
 
-        --message-success-bg: #006b1b;
-        --message-warning-bg: #583305;
-        --message-error-bg: #570808;
+    --message-success-bg: #006b1b;
+    --message-warning-bg: #583305;
+    --message-error-bg: #570808;
 
-        --darkened-bg: #212121;
-        --selected-bg: #1b1b1b;
-        --selected-row: #0b2b2c;
+    --darkened-bg: #212121;
+    --selected-bg: #1b1b1b;
+    --selected-row: #0b2b2c;
 
-        --button-fg: #fff;
-        --button-bg: var(--primary);
-        --button-hover-bg: #609ab6;
-        --default-button-bg: var(--secondary);
-        --default-button-hover-bg: #205067;
-        --close-button-bg: #333333;
-        --close-button-hover-bg: #666666;
-        --delete-button-bg: #ba2121;
-        --delete-button-hover-bg: #a41515;
+    --button-fg: #fff;
+    --button-bg: var(--primary);
+    --button-hover-bg: #609ab6;
+    --default-button-bg: var(--secondary);
+    --default-button-hover-bg: #205067;
+    --close-button-bg: #333333;
+    --close-button-hover-bg: #666666;
+    --delete-button-bg: #ba2121;
+    --delete-button-hover-bg: #a41515;
 
-        --object-tools-fg: var(--button-fg);
-        --object-tools-bg: var(--close-button-bg);
-        --object-tools-hover-bg: var(--close-button-hover-bg);
-    }
+    --object-tools-fg: var(--button-fg);
+    --object-tools-bg: var(--close-button-bg);
+    --object-tools-hover-bg: var(--close-button-hover-bg);
+}
+
+/* THEME SWITCH */
+.theme-toggle {
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: transparent;
+    vertical-align: middle;
+    margin-inline-start: 5px;
+    margin-top: -1px;
+}
+
+.theme-toggle svg {
+    vertical-align: middle;
+    height: 1rem;
+    width: 1rem;
+    display: none;
+}
+
+/*
+Fully hide screen reader text so we only show the one matching the current
+theme.
+*/
+.theme-toggle .visually-hidden {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .theme-label-when-dark {
+    display: block;
+}
+
+html[data-theme="light"] .theme-toggle .theme-label-when-light {
+    display: block;
+}
+
+/* ICONS */
+.theme-toggle svg.theme-icon-when-dark,
+.theme-toggle svg.theme-icon-when-light {
+    fill: var(--header-link-color);
+    color: var(--header-bg);
+}
+
+html[data-theme="dark"] .theme-toggle svg.theme-icon-when-dark {
+    display: block;
+}
+
+html[data-theme="light"] .theme-toggle svg.theme-icon-when-light {
+    display: block;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    color: var(--body-fg);
+    background-color: var(--body-bg);
 }

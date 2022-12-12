@@ -1,8 +1,14 @@
 {% load i18n admin_urls %}
+
+{% if object %}
+{% url opts|admin_urlname:'change' object.pk|admin_urlquote as close_url %}
+{% else %}
+{% url opts|admin_urlname:'changelist' as close_url %}
+{% endif %}
+
 <div class="submit-row">
   <input type="submit" value="Execute" class="default" name="_save">
-  <p class="deletelink-box"><a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}"
-                               class="closelink">Back</a></p>
+  <p class="deletelink-box"><a href="{{ close_url }}" class="closelink">Back</a></p>
   <input type="submit" value="Execute and run another" name="_addanother">
   <input type="submit" value="Execute and keep values" name="_addanother">
 </div>

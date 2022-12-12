@@ -11,11 +11,18 @@ from .download import youtube_dl_download
 from .utils import trim_audio_file, parse_jsonl_live_chat
 
 
+class VideoManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+
+
 class Video(models.Model):
     code = models.CharField(max_length=12, unique=True)
     title = models.CharField(max_length=200, blank=True)
     published = models.DateField(null=True, blank=True)
     duration = models.DurationField(blank=True, null=True)
+
+    objects = VideoManager()
 
     class Meta:
         verbose_name = "Q&A video"
@@ -24,6 +31,9 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title or self.code
+
+    def natural_key(self):
+        return self.code
 
     def questions(self):
         return self.question_set.order_by("-timestamp")

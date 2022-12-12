@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
+from django.core.management.commands import dumpdata
 from django.db import models
 from django.db.models import Count
 from django.urls import reverse
@@ -30,6 +31,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "download_subtitles",
         "build_livechat",
         "transcribe_questions",
+        "dumpdata"
     )
     readonly_fields = (
         "link",

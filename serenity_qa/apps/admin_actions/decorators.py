@@ -18,7 +18,8 @@ def action_view(
 
             if isinstance(obj_or_qs, QuerySet):
                 # This should be improved somewhat
-                obj = obj_or_qs.first()
+                obj = None
+                # obj = obj_or_qs.first()
             else:
                 assert isinstance(obj_or_qs, model)
                 obj = obj_or_qs
@@ -33,7 +34,7 @@ def action_view(
 
             context = {
                 **modeladmin.admin_site.each_context(request),
-                "title": "%s: %s" % (tool_label, obj),
+                "title": f"{tool_label}: {obj}" if obj else tool_label,
                 "subtitle": None,
                 "module_name": str(capfirst(opts.verbose_name_plural)),
                 "object": obj,

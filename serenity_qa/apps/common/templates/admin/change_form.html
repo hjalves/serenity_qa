@@ -1,0 +1,12 @@
+{% extends "admin/change_form.html" %}
+{% load admin_urls %}
+
+{% block object-tools-items %}
+  {% if autorefresh %}
+  {% url opts|admin_urlname:'refresh' original.pk|admin_urlquote as refresh_url %}
+  <li>
+    <a href="javascript:" class="" hx-get="{{ refresh_url }}?last={% now "U" %}" hx-trigger="every {{ autorefresh }}">Auto refresh</a>
+  </li>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

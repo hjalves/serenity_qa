@@ -1,12 +1,63 @@
+import logging
+
 import celery.states
 from celery.app.task import Task
-from celery.utils.log import get_task_logger
+from celery.utils.log import get_task_logger, get_logger
+from django.core.cache import cache
 from django.utils import timezone
 from kombu.utils import uuid
+from pythonjsonlogger.jsonlogger import JsonFormatter
 
 from .models import Job
 
 logger = get_task_logger(__name__)
+
+
+def get_job_redis_connection():
+    return cache._cache.get_client()
+
+
+class JobLogRedisHandler(logging.Handler):
+    STREAM_EXPIRE_TIME = 3600
+
+    def __init__(
+        self,
+        task_request,
+        redis_client=None,
+        level=logging.NOTSET,
+    ):
+        super(JobLogRedisHandler, self).__init__(level)
+        self.task_id = task_request.id
+        self.task_name = task_request.task
+        self.redis_stream = f"job:{self.task_id}"
+        self.redis_client = redis_client or get_job_redis_connection()
+        self.formatter = JsonFormatter(reserved_attrs=())
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.redis_client.xadd(self.redis_stream, {"message": msg})
+        self.redis_client.expire(self.redis_stream, self.STREAM_EXPIRE_TIME)
+
+
+def setup_logger_redirection(task_request):
+    redis_handler = JobLogRedisHandler(task_request)
+    logger_task = get_logger("celery.task")
+    logger_redir = get_logger("celery.redirected")
+    if not any(isinstance(h, JobLogRedisHandler) for h in logger_task.handlers):
+        logger_task.addHandler(redis_handler)
+    if not any(isinstance(h, JobLogRedisHandler) for h in logger_redir.handlers):
+        logger_redir.addHandler(redis_handler)
+
+
+def clean_logger_redirection():
+    logger_task = get_logger("celery.task")
+    logger_redir = get_logger("celery.redirected")
+    for h in list(logger_task.handlers):
+        if isinstance(h, JobLogRedisHandler):
+            logger_task.removeHandler(h)
+    for h in list(logger_redir.handlers):
+        if isinstance(h, JobLogRedisHandler):
+            logger_redir.removeHandler(h)
 
 
 class JobTask(Task):
@@ -26,6 +77,7 @@ class JobTask(Task):
         return result
 
     def __call__(self, *args, **kwargs):
+        setup_logger_redirection(task_request=self.request)
         job, _ = Job.objects.update_or_create(
             task_id=self.request.id,
             defaults={
@@ -37,6 +89,9 @@ class JobTask(Task):
         )
         self.request.job = job
         return super(JobTask, self).__call__(*args, **kwargs)
+
+    def after_return(self, status, retval, task_id, args, kwargs, einfo):
+        clean_logger_redirection()
 
     def on_success(self, retval, task_id, args, kwargs):
         job = self.request.job
@@ -50,7 +105,16 @@ class JobTask(Task):
         job.finished_at = timezone.now()
         job.save()
 
-    def set_progress(self, current=None, total=None, message=None):
+    def log_progress(
+        self,
+        message,
+        *args,
+        current=None,
+        total=None,
+        extra=None,
+        level=logging.INFO,
+        **kwargs,
+    ):
         meta = {}
         if current is not None:
             meta["current"] = current
@@ -58,10 +122,11 @@ class JobTask(Task):
             meta["total"] = total
         if current is not None and total is not None:
             meta["percentage"] = round(100.0 * current / total, 1)
-        if message is not None:
-            meta["message"] = message
+        extra = {**(extra or {}), **meta}
+        logger.log(level, message, *args, **kwargs, extra=extra)
+
+        meta["message"] = message
         self.update_state(state="PROGRESS", meta=meta)
-        logger.info(" ".join(f"{key}={value!r}" for key, value in meta.items()))
 
     # def attach_file(self, file, name=None, content_type=None, description=None):
     #     django_file = File(file, name)

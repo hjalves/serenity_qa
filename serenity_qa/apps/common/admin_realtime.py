@@ -33,18 +33,18 @@ class ModelAdminRealtime(admin.ModelAdmin):
             wrapper.model_admin = self
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.model_name
+        app_label, model_name = self.model._meta.app_label, self.model._meta.model_name
 
         return [
             path(
-                "<path:object_id>/get/",
+                "<path:object_id>/getfield/",
                 wrap(self.getfield_view),
-                name="%s_%s_getfield" % info,
+                name=f"{app_label}_{model_name}_getfield",
             ),
             path(
                 "<path:object_id>/refresh/",
                 wrap(self.refresh_view),
-                name="%s_%s_refresh" % info,
+                name=f"{app_label}_{model_name}_refresh",
             ),
         ]
 
@@ -67,7 +67,11 @@ class ModelAdminRealtime(admin.ModelAdmin):
 
     def getfield_view(self, request, object_id, extra_context=None):
         field = request.GET.get("field")
+        if not field:
+            return HttpResponse(status=400)
         obj = self.get_object(request, unquote(object_id))
+        if not obj:
+            return HttpResponse(status=404)
         value = getattr(self, field)(obj)
         return HttpResponse(content=value)
 
@@ -125,9 +129,9 @@ def autoupdate(function=None, *, polling=1000, condition=None):
                 return result
             get_link = modeladmin.getfield_url(obj.pk)
             get_link += "?" + urlencode({"field": func.__name__})
-            trigger = f"load delay:{polling}ms"
+            hx_trigger = f"load delay:{polling}ms"
             html_div = '<div hx-get="{}" hx-trigger="{}" hx-swap="outerHTML">{}</div>'
-            return format_html(html_div, get_link, trigger, result)
+            return format_html(html_div, get_link, hx_trigger, result)
 
         decorated.auto_update = True
         return decorated

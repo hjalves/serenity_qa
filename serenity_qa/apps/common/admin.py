@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.utils import timezone
@@ -7,19 +9,23 @@ from django_object_actions import DjangoObjectActions
 from .admin_realtime import ModelAdminRealtime, autoupdate
 from .forms import DumpDataForm
 from .models import Job
+from .utils import get_job_log
 from ..admin_actions.decorators import action_view
-from ..questions.forms import VideoTaskForm
 
 
 @admin.register(Job)
 class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
+    change_form_template = "admin/common/job/change_form.html"
     autorefresh = 2
+    search_fields = ("task_name", "description")
+    list_filter = ("task_name", "state")
     list_display = (
         "__str__",
         "result_progress",
         "elapsed",
         "created_at",
     )
+
     readonly_fields = (
         "task_id",
         "task_name",
@@ -31,12 +37,12 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         "started_at",
         "finished_at",
         "elapsed",
-        "result_progress"
+        "result_progress",
     )
     fieldsets = (
         (None, {"fields": ("description", "result_progress", "elapsed", "message")}),
         (
-            u"Details",
+            "Details",
             {
                 "fields": (
                     "task_id",
@@ -50,8 +56,9 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
                 "classes": ("collapse",),
             },
         ),
+        ("Job log", {"fields": ("job_log",), "classes": ("collapse",)}),
     )
-    changelist_actions = ('dumpdata', )
+    changelist_actions = ("dumpdata",)
 
     def has_add_permission(self, request):
         return False
@@ -60,7 +67,7 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         return False
 
     def result_info(self, obj):
-        return obj.result_info() or '-'
+        return obj.result_info() or "-"
 
     @autoupdate(polling=2000, condition=lambda obj: obj.state not in Job.READY_STATES)
     def elapsed(self, obj):
@@ -86,18 +93,18 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         value = obj.progress_percentage()
         return format_html(
             '<progress max=100 {value} style="width: 250px"></progress> '
-            '<span>{text}</span>',
-            value=u"value={}".format(value) if value is not None else "",
+            "<span>{text}</span>",
+            value="value={}".format(value) if value is not None else "",
             text="{} %".format(value) if value is not None else "",
         )
 
-    result_progress.short_description = u"Progress"
+    result_progress.short_description = "Progress"
 
     @autoupdate(polling=2000, condition=lambda obj: obj.state not in Job.READY_STATES)
     def message(self, obj):
-        return obj.progress_message() or '-'
+        return obj.progress_message() or "-"
 
-    message.short_description = u"Message"
+    message.short_description = "Message"
 
     def _state(self, obj):
         return format_html(
@@ -108,14 +115,24 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
 
     _state.short_description = "state"
 
+    def job_log(self, obj):
+        def log_format(e):
+            levelname, message = e["levelname"], e["message"]
+            dt = datetime.datetime.fromtimestamp(e["created"])
+            dt = dt.isoformat(" ", timespec="milliseconds")
+            return f"{dt} [{levelname}] {message}"
+
+        job_log = get_job_log(obj.task_id)
+        return "\n".join(log_format(e) for e in job_log)
+
     @action_view()
     def dumpdata(self, request, queryset):
         data = request.GET
         form = DumpDataForm(initial=data)
 
-        fieldsets = [(None, {"fields": ['model_name', 'arguments']})]
+        fieldsets = [(None, {"fields": ["model_name", "arguments"]})]
         admin_form = AdminForm(form, fieldsets, {})
-        if request.method == 'POST':
+        if request.method == "POST":
             form = DumpDataForm(data=request.POST)
             if form.is_valid():
                 print(form.cleaned_data)
@@ -124,5 +141,5 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         return {
             "subtitle": "Choose a model to dump data from",
             "adminform": admin_form,
-            "content": "Will dump data"
+            "content": "Will dump data",
         }

@@ -3,14 +3,15 @@ from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.db import models
 from django.db.models import Count
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join
 from django.utils.http import urlencode
 from django_object_actions import DjangoObjectActions
 
-from .dumpdata import questions_dumpdata
 from .forms import VideoTaskForm
 from .models import Video, Tag, Question, LiveChatMessage
+from .tasks import video_dump_data
 from .widgets import DurationWidget
 from ..admin_actions.decorators import action_view
 
@@ -129,18 +130,23 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             form = VideoTaskForm(data=request.POST)
             if form.is_valid():
                 data = form.cleaned_data
-                questions_dumpdata(obj.id, data['models'], data['format'], data['indent'])
-                return {"content": "NICE"}
+                file_format = data["format"].upper()
+                description = f"{file_format} data export for: {obj}"
+
+                result = video_dump_data.apply_async(
+                    args=(obj.id, data["models"], data["format"]),
+                    kwargs={'indent': data["indent"]},
+                    description=description,
+                )
+                return HttpResponseRedirect(result.job.admin_link() + '?download')
         else:
             data = request.GET
             form = VideoTaskForm(initial=data)
 
         fieldsets = [(None, {"fields": ["models", "format", "indent"]})]
-
         return {
             "subtitle": "Choose which kind of data to export",
             "adminform": AdminForm(form, fieldsets, {}),
-            "content": "very cool",
         }
 
 

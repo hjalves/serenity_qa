@@ -86,7 +86,7 @@ class ModelAdminRealtime(admin.ModelAdmin):
         if (
             not last_refresh_time
             or not page_refresh_time
-            or page_refresh_time >= last_refresh_time
+            or page_refresh_time > last_refresh_time
         ):
             return HttpResponse(status=204)
         return HttpResponseClientRefresh()
@@ -114,7 +114,8 @@ class ModelAdminRealtime(admin.ModelAdmin):
 
     def last_refresh_time(self, object_id=None):
         refresh_key = self.refresh_key(self.model, object_id)
-        return cache.get(refresh_key)
+        last_refresh = cache.get(refresh_key)
+        return last_refresh
 
     def refresh_this_admin(self, object_id=None):
         self.perform_refresh(self.model, object_id)

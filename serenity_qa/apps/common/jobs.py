@@ -4,6 +4,8 @@ import celery.states
 from celery.app.task import Task
 from celery.utils.log import get_task_logger, get_logger
 from django.core.cache import cache
+from django.core.files import File
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from kombu.utils import uuid
 from pythonjsonlogger.jsonlogger import JsonFormatter
@@ -41,23 +43,23 @@ class JobLogRedisHandler(logging.Handler):
 
 def setup_logger_redirection(task_request):
     redis_handler = JobLogRedisHandler(task_request)
-    logger_task = get_logger("celery.task")
-    logger_redir = get_logger("celery.redirected")
-    if not any(isinstance(h, JobLogRedisHandler) for h in logger_task.handlers):
-        logger_task.addHandler(redis_handler)
-    if not any(isinstance(h, JobLogRedisHandler) for h in logger_redir.handlers):
-        logger_redir.addHandler(redis_handler)
+    task = get_logger("celery.task")
+    redirected = get_logger("celery.redirected")
+    if not any(isinstance(h, JobLogRedisHandler) for h in task.handlers):
+        task.addHandler(redis_handler)
+    if not any(isinstance(h, JobLogRedisHandler) for h in redirected.handlers):
+        redirected.addHandler(redis_handler)
 
 
 def clean_logger_redirection():
-    logger_task = get_logger("celery.task")
-    logger_redir = get_logger("celery.redirected")
-    for h in list(logger_task.handlers):
+    task = get_logger("celery.task")
+    redirected = get_logger("celery.redirected")
+    for h in list(task.handlers):
         if isinstance(h, JobLogRedisHandler):
-            logger_task.removeHandler(h)
-    for h in list(logger_redir.handlers):
+            task.removeHandler(h)
+    for h in list(redirected.handlers):
         if isinstance(h, JobLogRedisHandler):
-            logger_redir.removeHandler(h)
+            redirected.removeHandler(h)
 
 
 class JobTask(Task):
@@ -66,6 +68,8 @@ class JobTask(Task):
 
     def apply_async(self, args=None, kwargs=None, task_id=None, **extra):
         task_id = task_id or uuid()
+        if 'description' in extra:
+            self.description = extra['description']
         job = Job.objects.create(
             task_id=task_id,
             task_name=self.name,
@@ -78,6 +82,8 @@ class JobTask(Task):
 
     def __call__(self, *args, **kwargs):
         setup_logger_redirection(task_request=self.request)
+        if 'description' in self.request.properties:
+            self.description = self.request.properties['description']
         job, _ = Job.objects.update_or_create(
             task_id=self.request.id,
             defaults={
@@ -99,6 +105,7 @@ class JobTask(Task):
         job.description = self.description
         job.finished_at = timezone.now()
         job.save()
+        job.refresh_admin_page()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         job = self.request.job
@@ -106,6 +113,7 @@ class JobTask(Task):
         job.description = self.description
         job.finished_at = timezone.now()
         job.save()
+        job.refresh_admin_page()
 
     def log_progress(
         self,
@@ -130,10 +138,10 @@ class JobTask(Task):
         meta["message"] = message
         self.update_state(state="PROGRESS", meta=meta)
 
-    # def attach_file(self, file, name=None, content_type=None, description=None):
-    #     django_file = File(file, name)
-    #     return self.request.job.attach(django_file, content_type, description)
-    #
-    # def attach_content(self, content, name, content_type=None, description=None):
-    #     django_file = ContentFile(content, name)
-    #     return self.request.job.attach(django_file, content_type, description)
+    def attach_file(self, file, name=None, content_type=None, description=None):
+        django_file = File(file, name)
+        return self.request.job.attach(django_file, content_type, description)
+
+    def attach_content(self, content, name, content_type=None, description=None):
+        django_file = ContentFile(content, name)
+        return self.request.job.attach(django_file, content_type, description)

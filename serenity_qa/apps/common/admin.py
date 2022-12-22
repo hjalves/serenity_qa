@@ -8,15 +8,36 @@ from django_object_actions import DjangoObjectActions
 
 from .admin_realtime import ModelAdminRealtime, autoupdate
 from .forms import DumpDataForm
-from .models import Job
-from .utils import get_job_log
+from .models import Job, JobAttachment
+from .utils import get_job_log, humansize
 from ..admin_actions.decorators import action_view
+
+
+class JobAttachmentInline(admin.TabularInline):
+    model = JobAttachment
+    extra = 0
+    max_num = 0
+    fields = readonly_fields = ("link", "type", "size")
+
+    def has_add_permission(self, request, obj):
+        return False
+
+    def link(self, obj):
+        return format_html('<a href="{1}" target="_blank">{0}', obj.name, obj.url)
+
+    link.short_description = "file"
+
+    def size(self, obj):
+        if obj.size:
+            return humansize(obj.size)
+        return 'N/A'
 
 
 @admin.register(Job)
 class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
     change_form_template = "admin/common/job/change_form.html"
     autorefresh = 2
+    inlines = [JobAttachmentInline]
     search_fields = ("task_name", "description")
     list_filter = ("task_name", "state")
     list_display = (
@@ -38,7 +59,7 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         "finished_at",
         "elapsed",
         "result_progress",
-        "job_log"
+        "job_log",
     )
     fieldsets = (
         (None, {"fields": ("description", "result_progress", "elapsed", "message")}),

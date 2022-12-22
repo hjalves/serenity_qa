@@ -21,9 +21,7 @@ class VideoTaskForm(forms.Form):
         ("jsonl", "JSONL"),
         ("xml", "XML"),
         ("yaml", "YAML"),
-        ("python", "Python"),
     ]
-    # FORMAT_CHOICES = [(k, k.upper()) for k in get_public_serializer_formats()]
     models = forms.MultipleChoiceField(
         choices=MODEL_CHOICES,
         widget=CheckboxSelectMultiple,

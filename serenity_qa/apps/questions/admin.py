@@ -26,9 +26,9 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "livechat_messages",
     )
     actions = (
-        "download",
+        "download_audio",
+        "download_metadata",
         "fill_metadata",
-        "download_subtitles",
         "build_livechat",
         "transcribe_questions",
         "dumpdata"
@@ -92,25 +92,23 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     # Actions
 
-    def download(self, request, queryset):
+    def download_audio(self, request, queryset):
         for obj in queryset.all():
-            obj.download(only_audio=True)
+            obj.download_audio()
 
-    download.short_description = "Download audio"
+    download_audio.short_description = "Download audio"
+
+    def download_metadata(self, request, queryset):
+        for obj in queryset.all():
+            obj.download_metadata(live_chat=True, subtitles=True)
+
+    download_metadata.short_description = "Download metadata, subtitles, live chat"
 
     def fill_metadata(self, request, queryset):
         for obj in queryset.all():
             obj.fill_metadata()
 
     fill_metadata.short_description = "Fill metadata"
-
-    def download_subtitles(self, request, queryset):
-        for obj in queryset.all():
-            obj.download(
-                skip_video=True, only_audio=False, live_chat=True, subtitles=True
-            )
-
-    download_subtitles.short_description = "Download subtitles, live chat"
 
     def build_livechat(self, request, queryset):
         for obj in queryset.all():

@@ -123,7 +123,8 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
             return f"{dt} [{levelname}] {message}"
 
         job_log = get_job_log(obj.task_id)
-        return "\n".join(log_format(e) for e in job_log)
+        output = "\n".join(log_format(e) for e in job_log)
+        return format_html("<pre><code>{}</code></pre>", output)
 
     @action_view()
     def dumpdata(self, request, queryset):

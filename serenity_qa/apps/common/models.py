@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.functional import cached_property
 
 from serenity_qa.apps.common.admin_realtime import ModelAdminRealtime
+from serenity_qa.apps.common.utils import format_exception
 
 
 class Job(models.Model):
@@ -54,6 +55,11 @@ class Job(models.Model):
         state = self.realtime_state()
         if state == "PROGRESS":
             return (self.result_info() or {}).get("message")
+        elif state in ("FAILURE", "SUCCESS"):
+            result_info = self.result_info()
+            if isinstance(result_info, Exception):
+                return format_exception(result_info)
+            return result_info
 
     def refresh_admin_page(self):
         ModelAdminRealtime.perform_refresh(self.__class__, self.pk)

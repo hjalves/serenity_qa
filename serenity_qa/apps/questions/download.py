@@ -1,18 +1,6 @@
-import logging
 from pathlib import Path
 
 import yt_dlp
-
-logger = logging.getLogger(__name__)
-
-
-def my_hook(d):
-    pass
-    # print(d["status"])
-    # print(d["downloaded_bytes"], d["total_bytes"])
-    # logger.debug("hook: %s", d)
-    # if d["status"] == "finished":
-    #    print(d)
 
 
 def youtube_dl_download(
@@ -24,22 +12,23 @@ def youtube_dl_download(
     only_audio=False,
     live_chat=False,
     subtitles=False,
+    logger=None
 ):
     download_dir = Path(download_dir or "./media/")
-    progress_hooks = progress_hooks or [my_hook]
     out_template = str((download_dir / "%(id)s.%(ext)s").resolve())
 
     ydl_opts = {
         "outtmpl": out_template,
         "logger": logger,
         "writeinfojson": info,
-        "progress_hooks": progress_hooks,
         "skip_download": skip_download,
         "writesubtitles": True,
         "subtitleslangs": ["en"],
         "writeautomaticsub": subtitles,
         "addmetadata": True,
     }
+    if progress_hooks:
+        ydl_opts["progress_hooks"] = progress_hooks
     if live_chat:
         ydl_opts["subtitleslangs"] += ["live_chat"]
     if only_audio:

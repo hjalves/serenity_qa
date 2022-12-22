@@ -152,10 +152,17 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
+# Datetime formats
+
+DATETIME_FORMAT = "Y-m-d H:i:s"
+DATE_FORMAT = "Y-m-d"
+TIME_FORMAT = "H:i"
+SHORT_DATE_FORMAT = "Y-m-d"
+SHORT_DATETIME_FORMAT = "Y-m-d H:i"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -170,8 +177,8 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-DOWNLOAD_DIR = MEDIA_ROOT / "yt_dlp"
-DOWNLOAD_URL = MEDIA_URL + "yt_dlp/"
+DOWNLOAD_DIR = MEDIA_ROOT / "youtube"
+DOWNLOAD_URL = MEDIA_URL + "youtube/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

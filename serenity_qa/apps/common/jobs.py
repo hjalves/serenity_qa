@@ -96,12 +96,14 @@ class JobTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
         job = self.request.job
         job.state = celery.states.SUCCESS
+        job.description = self.description
         job.finished_at = timezone.now()
         job.save()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         job = self.request.job
         job.state = celery.states.FAILURE
+        job.description = self.description
         job.finished_at = timezone.now()
         job.save()
 
@@ -112,7 +114,7 @@ class JobTask(Task):
         current=None,
         total=None,
         extra=None,
-        level=logging.INFO,
+        level=logging.NOTSET,
         **kwargs,
     ):
         meta = {}

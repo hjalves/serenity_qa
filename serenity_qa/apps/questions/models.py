@@ -88,6 +88,27 @@ class Video(models.Model):
             subtitles=subtitles,
         )
 
+    def download_audio(self):
+        from .tasks import youtube_download_audio
+
+        directory = settings.DOWNLOAD_DIR / "audio"
+        directory.mkdir(parents=True, exist_ok=True)
+
+        return youtube_download_audio.delay(url=self.url, download_dir=str(directory))
+
+    def download_metadata(self, live_chat=False, subtitles=False):
+        from .tasks import youtube_download_metadata
+
+        directory = settings.DOWNLOAD_DIR / "metadata"
+        directory.mkdir(parents=True, exist_ok=True)
+
+        return youtube_download_metadata.delay(
+            url=self.url,
+            download_dir=str(directory),
+            live_chat=live_chat,
+            subtitles=subtitles,
+        )
+
     def fill_metadata(self, download=True):
         try:
             metadata = self.metadata()
@@ -108,11 +129,15 @@ class Video(models.Model):
 
     @property
     def url(self):
-        return f"https://www.youtube.com/watch?v={self.code}"
+        if self.code:
+            return f"https://www.youtube.com/watch?v={self.code}"
+        return ""
 
     @property
     def embed_youtube_url(self):
-        return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
+        if self.code:
+            return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
+        return ""
 
     def build_livechat_questions(self):
         self.livechatmessage_set.all().delete()

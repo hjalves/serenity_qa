@@ -12,6 +12,7 @@ from serenity_qa.apps.questions.dumpdata import (
     get_objects_from_querysets,
 )
 from serenity_qa.apps.questions.models import Video
+from serenity_qa.apps.questions.utils import serializer_format_to_mimetype
 
 logger = get_task_logger(__name__)
 
@@ -56,8 +57,6 @@ def youtube_download_audio(self, url, download_dir=None):
 
 @shared_task(bind=True, base=JobTask, description="Video dump data")
 def video_dump_data(self, video_id, models, format, **extra):
-    # self.description = f"Video dump data ({', '.join(models)}) for ID={video_id}"
-
     def get_objects(count_only=False):
         queryset = Video.objects.get_queryset().filter(id=video_id)
         obj = queryset.get()
@@ -82,18 +81,11 @@ def video_dump_data(self, video_id, models, format, **extra):
             **extra,
         )
         obj = Video.objects.get(id=video_id)
-        now = timezone.now().strftime('%Y%m%d-%H%M%S')
-        filename = f"{'-'.join(models)}-{obj.code}-{now}.{format}"
-        mimetypes = {
-            "json": "application/json",
-            "jsonl": "application/jsonlines",
-            "xml": "application/xml",
-            "yaml": "application/x-yaml",
-        }
+        now = timezone.now().strftime("%Y%m%d-%H%M%S")
         self.attach_file(
             stream,
-            name=filename,
+            name=f"{'-'.join(models)}-{obj.code}-{now}.{format}",
             description=f"{format.upper()} exported file ({', '.join(models)})",
-            content_type=mimetypes[format],
+            content_type=serializer_format_to_mimetype(format),
         )
     return result

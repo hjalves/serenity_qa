@@ -132,13 +132,12 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
                 data = form.cleaned_data
                 file_format = data["format"].upper()
                 description = f"{file_format} data export for: {obj}"
-
                 result = video_dump_data.apply_async(
                     args=(obj.id, data["models"], data["format"]),
-                    kwargs={'indent': data["indent"]},
+                    kwargs={"indent": data["indent"]},
                     description=description,
                 )
-                return HttpResponseRedirect(result.job.admin_link() + '?download')
+                return HttpResponseRedirect(result.job.admin_link() + "?download")
         else:
             data = request.GET
             form = VideoTaskForm(initial=data)

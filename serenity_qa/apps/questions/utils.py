@@ -6,6 +6,16 @@ from pathlib import Path
 import ffmpeg
 
 
+def serializer_format_to_mimetype(format):
+    mimetypes = {
+        "json": "application/json",
+        "jsonl": "application/jsonlines",
+        "xml": "application/xml",
+        "yaml": "application/x-yaml",
+    }
+    return mimetypes.get(format, "text/plain")
+
+
 def trim_audio_file(input_file, start_second, duration, output_file=None):
     if not output_file:
         output_file = tempfile.mktemp(suffix=".opus")
@@ -54,7 +64,7 @@ def handle_add_chat_item_action(obj):
         "liveChatPlaceholderItemRenderer",
         "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer",
         "liveChatSponsorshipsGiftRedemptionAnnouncementRenderer",
-        "liveChatPaidStickerRenderer"
+        "liveChatPaidStickerRenderer",
     }, key
     if key == "liveChatTextMessageRenderer":
         timestamp = value["timestampText"]["simpleText"]

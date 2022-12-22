@@ -13,6 +13,7 @@ gunicorn>=20.1.0
 pip-tools>=6.12.0
 python-json-logger>=2.0.4
 python-magic>=0.4.27
+pyyaml>=6.0
 redis>=4.4.0
 uvicorn>=0.20.0
 whitenoise==6.2.0

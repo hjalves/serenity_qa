@@ -1,4 +1,4 @@
-{% extends 'admin/base.html' %}
+{% extends "admin/base.html" %}
 {% load static %}
 
 {% block dark-mode-vars %}
@@ -11,5 +11,5 @@
 
 {% block userlinks %}
 {{ block.super }}
-{% include "admin/color_theme_toggle.html" %}
+{% include "admin/includes/color_theme_toggle.html" %}
 {% endblock %}

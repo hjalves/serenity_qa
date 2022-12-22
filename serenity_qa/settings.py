@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django_better_admin_arrayfield",
     "django_htmx",
     # Project
-    "serenity_qa.apps.admin_actions",
     "serenity_qa.apps.common",
     "serenity_qa.apps.questions",
     "serenity_qa.admin.MyAdminConfig",

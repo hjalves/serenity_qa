@@ -7,10 +7,10 @@ from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
 
 from .admin_realtime import ModelAdminRealtime, autoupdate
+from .decorators import action_view
 from .forms import DumpDataForm
 from .models import Job, JobAttachment
 from .utils import get_job_log, humansize
-from ..admin_actions.decorators import action_view
 
 
 class JobAttachmentInline(admin.TabularInline):
@@ -110,7 +110,7 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
     def result_progress(self, obj):
         state = obj.realtime_state()
         if state in Job.READY_STATES:
-            return Job.READY_STATES[state]
+            return dict(Job.STATE_CHOICES)[state]
 
         value = obj.progress_percentage()
         return format_html(

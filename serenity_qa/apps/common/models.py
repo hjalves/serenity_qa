@@ -11,16 +11,19 @@ from serenity_qa.apps.common.utils import format_exception, get_object_admin_lin
 
 
 class Job(models.Model):
-    READY_STATES = {
-        "SUCCESS": "Success",
-        "FAILURE": "Failure",
-        "REVOKED": "Revoked",
-    }
+    STATE_CHOICES = [
+        ("PENDING", "Pending"),
+        ("STARTED", "Started"),
+        ("SUCCESS", "Success"),
+        ("FAILURE", "Failure"),
+        ("REVOKED", "Revoked"),
+    ]
+    READY_STATES = ("SUCCESS", "FAILURE", "REVOKED")
 
     task_id = models.CharField(max_length=255, unique=True)
     task_name = models.CharField(max_length=255)
     description = models.CharField(max_length=500, blank=True)
-    state = models.CharField(max_length=100)
+    state = models.CharField(max_length=100, choices=STATE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)

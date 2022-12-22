@@ -13,7 +13,7 @@ from .forms import VideoTaskForm
 from .models import Video, Tag, Question, LiveChatMessage
 from .tasks import video_dump_data
 from .widgets import DurationWidget
-from ..admin_actions.decorators import action_view
+from ..common.decorators import action_view
 
 
 @admin.register(Video)

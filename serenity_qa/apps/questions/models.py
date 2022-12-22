@@ -12,8 +12,8 @@ from .utils import trim_audio_file, parse_jsonl_live_chat
 
 
 class VideoManager(models.Manager):
-    def get_by_natural_key(self, code):
-        return self.get(code=code)
+    def get_by_natural_key(self, code, published):
+        return self.get(code=code, published=published)
 
 
 class Video(models.Model):
@@ -33,7 +33,7 @@ class Video(models.Model):
         return self.title or self.code
 
     def natural_key(self):
-        return self.code
+        return self.code, self.published
 
     def questions(self):
         return self.question_set.order_by("-timestamp")
@@ -173,6 +173,13 @@ def question_audiofile_path(instance, filename):
     )
 
 
+class QuestionManager(models.Manager):
+    def get_by_natural_key(self, code, published, timestamp):
+        return self.get(
+            video__code=code, video__published=published, timestamp=timestamp
+        )
+
+
 class Question(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     timestamp = models.DurationField()
@@ -192,6 +199,9 @@ class Question(models.Model):
 
     def __str__(self):
         return f"[{self.timestamp}] {self.question_trunc()}"
+
+    def natural_key(self):
+        return self.video.natural_key() + (self.timestamp,)
 
     def timestamp_secs(self):
         return int(self.timestamp.total_seconds())
@@ -253,6 +263,9 @@ class LiveChatMessage(models.Model):
 
     def __str__(self):
         return f"[{self.timestamp}] {self.author}: {self.message_trunc()}"
+
+    def natural_key(self):
+        return self.video.natural_key() + (self.author, self.timestamp)
 
     def message_trunc(self):
         return self.message[:80] + "..." if len(self.message) > 80 else self.message

@@ -38,6 +38,7 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         "finished_at",
         "elapsed",
         "result_progress",
+        "job_log"
     )
     fieldsets = (
         (None, {"fields": ("description", "result_progress", "elapsed", "message")}),

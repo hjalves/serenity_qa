@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
-from django.core.management.commands import dumpdata
 from django.db import models
 from django.db.models import Count
 from django.urls import reverse
@@ -9,7 +8,8 @@ from django.utils.html import format_html, format_html_join
 from django.utils.http import urlencode
 from django_object_actions import DjangoObjectActions
 
-from .forms import VideoQuestionForm, VideoTaskForm
+from .dumpdata import questions_dumpdata
+from .forms import VideoTaskForm
 from .models import Video, Tag, Question, LiveChatMessage
 from .widgets import DurationWidget
 from ..admin_actions.decorators import action_view
@@ -30,8 +30,6 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "download_metadata",
         "fill_metadata",
         "build_livechat",
-        "transcribe_questions",
-        "dumpdata"
     )
     readonly_fields = (
         "link",
@@ -40,7 +38,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "media_files",
     )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
-    change_actions = ("transcribe_questions", "run_task")
+    change_actions = ("transcribe_questions", "dumpdata")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -117,7 +115,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     build_livechat.short_description = "Build livechat questions"
 
     @action_view(
-        label="Questions transcription",
+        label="Transcription",
         description="Open a Youtube player and transcribe questions",
     )
     def transcribe_questions(self, request, obj):
@@ -125,20 +123,24 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             "video": obj,
         }
 
-    @action_view()
-    def run_task(self, request, obj):
-        data = request.GET
-        form = VideoTaskForm(initial=data)
+    @action_view(label="Dump data")
+    def dumpdata(self, request, obj):
+        if request.method == "POST":
+            form = VideoTaskForm(data=request.POST)
+            if form.is_valid():
+                data = form.cleaned_data
+                questions_dumpdata(obj.id, data['models'], data['format'], data['indent'])
+                return {"content": "NICE"}
+        else:
+            data = request.GET
+            form = VideoTaskForm(initial=data)
 
-        fieldsets = [(None, {"fields": ['task_name', 'arguments']})]
-        admin_form = AdminForm(form, fieldsets, {})
-        if request.method == 'POST':
-            admin_form = None
+        fieldsets = [(None, {"fields": ["models", "format", "indent"]})]
 
         return {
-            "subtitle": "Choose a task to run",
-            "adminform": admin_form,
-            "content": "very cool"
+            "subtitle": "Choose which kind of data to export",
+            "adminform": AdminForm(form, fieldsets, {}),
+            "content": "very cool",
         }
 
 

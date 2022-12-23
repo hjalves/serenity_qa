@@ -109,9 +109,10 @@ def update_feed(self):
         )
         if created:
             new_entries += 1
-            video, video_created = post.get_or_create_video()
-            if video_created:
-                logger.info("Q&A video created with code=%s", video.code)
+            if post.is_qa_video():
+                video, video_created = post.get_or_create_video()
+                if video_created:
+                    logger.info("Q&A video created with code=%s", video.code)
     result = "{} new entries".format(new_entries if new_entries > 0 else "no")
     logger.info(result)
     self.description = f"{self.description}: {result}"

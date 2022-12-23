@@ -234,11 +234,16 @@ class LiveChatMessageAdmin(admin.ModelAdmin):
 
 @admin.register(YoutubePost)
 class YoutubePostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'published', 'updated', 'created_on')
-    readonly_fields = ('created_on', 'updated_on')
+    list_display = ("title", "published", "updated", "created_on")
+    readonly_fields = ("created_on", "updated_on")
+    actions = ["add_as_video"]
 
     def has_add_permission(self, request):
         return False
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def add_as_video(self, request, queryset):
+        for obj in queryset.all():
+            video, created = obj.get_or_create_video()

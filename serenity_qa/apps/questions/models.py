@@ -333,3 +333,9 @@ class YoutubePost(models.Model):
             "thumbnail_url": thumbnail_url or "",
         }
         return cls.objects.update_or_create(entry_id=entry.id, defaults=defaults)
+
+    def get_or_create_video(self):
+        video, created = Video.objects.get_or_create(code=self.yt_videoid)
+        if not created:
+            logger.info("YoutubePost already exist as a Video object")
+        return video, created

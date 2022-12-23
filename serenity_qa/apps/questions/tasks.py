@@ -19,11 +19,11 @@ from serenity_qa.apps.questions.utils import serializer_format_to_mimetype
 logger = get_task_logger(__name__)
 
 
-@shared_task(bind=True, base=JobTask, description="Youtube metadata download")
+@shared_task(bind=True, base=JobTask, description="Download metadata")
 def youtube_download_metadata(
     self, url, download_dir=None, live_chat=True, subtitles=True
 ):
-    self.description = f"Youtube metadata download: {url}"
+    self.description = f"{self.description}: {url}"
     return youtube_dl_download(
         url,
         download_dir,
@@ -35,7 +35,7 @@ def youtube_download_metadata(
     )
 
 
-@shared_task(bind=True, base=JobTask, description="Youtube audio download")
+@shared_task(bind=True, base=JobTask, description="Download audio")
 def youtube_download_audio(self, url, download_dir=None):
     def progress_hook(info):
         status = info["status"]
@@ -46,6 +46,7 @@ def youtube_download_audio(self, url, download_dir=None):
             message=message,
         )
 
+    self.description = f"{self.description}: {url}"
     return youtube_dl_download(
         url,
         download_dir,

@@ -299,8 +299,8 @@ class YoutubePost(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "YouTube post"
-        verbose_name_plural = "YouTube posts"
+        verbose_name = "YouTube RSS post"
+        verbose_name_plural = "YouTube RSS posts"
         ordering = ("-published",)
 
     def __str__(self):
@@ -339,3 +339,7 @@ class YoutubePost(models.Model):
         if not created:
             logger.info("YoutubePost already exist as a Video object")
         return video, created
+
+    def is_qa_video(self):
+        title = self.title.lower()
+        return "office" in title and "hours" in title

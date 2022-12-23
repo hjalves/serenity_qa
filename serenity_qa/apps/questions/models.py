@@ -2,7 +2,8 @@ import datetime
 import json
 import logging
 import time
-from datetime import timezone, datetime
+from collections import Counter
+from datetime import timezone
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -10,8 +11,8 @@ from django.core.files import File
 from django.db import models
 from django.urls import reverse
 
-from .download import youtube_dl_download
-from .utils import trim_audio_file, parse_jsonl_live_chat
+from .livechat import parse_jsonl_live_chat
+from .utils import trim_audio_file
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,8 @@ class Video(models.Model):
     title = models.CharField(max_length=200, blank=True)
     published = models.DateField(null=True, blank=True)
     duration = models.DurationField(blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     objects = VideoManager()
 
@@ -43,92 +46,6 @@ class Video(models.Model):
     def questions(self):
         return self.question_set.order_by("-timestamp")
 
-    def existing_media_files(self):
-        if not self.code:
-            return {}
-
-        parent_dir = settings.DOWNLOAD_DIR
-        media_dir = settings.DOWNLOAD_URL
-
-        info_file = f"{self.code}.info.json"
-        audio_file = f"{self.code}.opus"
-        chat_file = f"{self.code}.live_chat.json"
-        subs_file = f"{self.code}.en.vtt"
-
-        media_files = [
-            ("info", parent_dir / info_file, urljoin(media_dir, info_file)),
-            ("audio", parent_dir / audio_file, urljoin(media_dir, audio_file)),
-            ("subtitles", parent_dir / subs_file, urljoin(media_dir, subs_file)),
-            ("live_chat", parent_dir / chat_file, urljoin(media_dir, chat_file)),
-        ]
-        return {file_type: url for file_type, path, url in media_files if path.exists()}
-
-    def metadata(self):
-        info_file = settings.DOWNLOAD_DIR / f"{self.code}.info.json"
-        return json.loads(info_file.read_text())
-
-    def live_chat(self):
-        info_file = settings.DOWNLOAD_DIR / f"{self.code}.live_chat.json"
-        return parse_jsonl_live_chat(info_file)
-
-    def audio_path(self):
-        if self.code:
-            return settings.DOWNLOAD_DIR / f"{self.code}.opus"
-
-    def audio_url(self):
-        if self.code:
-            return urljoin(settings.DOWNLOAD_URL, f"{self.code}.opus")
-
-    def download(
-        self, skip_video=False, only_audio=True, live_chat=False, subtitles=False
-    ):
-        directory = settings.DOWNLOAD_DIR
-        directory.mkdir(parents=True, exist_ok=True)
-        youtube_dl_download(
-            self.url,
-            download_dir=directory,
-            skip_download=skip_video,
-            only_audio=only_audio,
-            live_chat=live_chat,
-            subtitles=subtitles,
-        )
-
-    def download_audio(self):
-        from .tasks import youtube_download_audio
-
-        directory = settings.DOWNLOAD_DIR / "audio"
-        directory.mkdir(parents=True, exist_ok=True)
-
-        return youtube_download_audio.delay(url=self.url, download_dir=str(directory))
-
-    def download_metadata(self, live_chat=False, subtitles=False):
-        from .tasks import youtube_download_metadata
-
-        directory = settings.DOWNLOAD_DIR / "metadata"
-        directory.mkdir(parents=True, exist_ok=True)
-
-        return youtube_download_metadata.delay(
-            url=self.url,
-            download_dir=str(directory),
-            live_chat=live_chat,
-            subtitles=subtitles,
-        )
-
-    def fill_metadata(self, download=True):
-        try:
-            metadata = self.metadata()
-        except FileNotFoundError:
-            if download:
-                self.download(skip_video=True)
-                metadata = self.metadata()
-            else:
-                raise
-        self.title = metadata["title"]
-        upload_date = metadata["upload_date"]
-        self.published = datetime.datetime.strptime(upload_date, "%Y%m%d").date()
-        self.duration = datetime.timedelta(seconds=metadata["duration"])
-        self.save()
-
     def build_url(self, timestamp=None):
         return "{}&t={}s".format(self.url, int(timestamp.total_seconds()))
 
@@ -144,22 +61,114 @@ class Video(models.Model):
             return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
         return ""
 
-    def build_livechat_questions(self):
-        self.livechatmessage_set.all().delete()
-        livechat_questions = self.live_chat()
+    def existing_media_files(self):
+        if not self.code:
+            return {}
+
+        media_files = [
+            ("info", self.metadata_path(), self.metadata_url()),
+            ("audio", self.audio_path(), self.audio_url()),
+            ("subtitles", self.subtitles_path(), self.subtitles_url()),
+            ("live_chat", self.live_chat_path(), self.live_chat_url()),
+        ]
+        return {file_type: url for file_type, path, url in media_files if path.exists()}
+
+    def metadata_path(self):
+        if self.code:
+            return settings.DOWNLOAD_DIR / "metadata" / f"{self.code}.info.json"
+
+    def metadata_url(self):
+        if self.code:
+            return urljoin(settings.DOWNLOAD_URL, f"metadata/{self.code}.info.json")
+
+    def live_chat_path(self):
+        if self.code:
+            return settings.DOWNLOAD_DIR / "metadata" / f"{self.code}.live_chat.json"
+
+    def live_chat_url(self):
+        if self.code:
+            return urljoin(
+                settings.DOWNLOAD_URL, f"metadata/{self.code}.live_chat.json"
+            )
+
+    def subtitles_path(self):
+        if self.code:
+            return settings.DOWNLOAD_DIR / "metadata" / f"{self.code}.en.vtt"
+
+    def subtitles_url(self):
+        if self.code:
+            return urljoin(settings.DOWNLOAD_URL, f"metadata/{self.code}.en.vtt")
+
+    def audio_path(self):
+        if self.code:
+            return settings.DOWNLOAD_DIR / "audio" / f"{self.code}.opus"
+
+    def audio_url(self):
+        if self.code:
+            return urljoin(settings.DOWNLOAD_URL, f"audio/{self.code}.opus")
+
+    def metadata_file_contents(self):
+        if path := self.metadata_path():
+            return json.loads(path.read_text())
+
+    def live_chat_file_contents(self):
+        if path := self.live_chat_path():
+            return parse_jsonl_live_chat(path)
+
+    def download_audio(self):
+        from .tasks import download_audio
+
+        directory = settings.DOWNLOAD_DIR / "audio"
+        directory.mkdir(parents=True, exist_ok=True)
+
+        return download_audio.delay(url=self.url, download_dir=str(directory))
+
+    def download_metadata(self, live_chat=False, subtitles=False):
+        from .tasks import download_metadata
+
+        return download_metadata.delay(
+            video_id=self.id, live_chat=live_chat, subtitles=subtitles
+        )
+
+    def import_metadata(self):
+        metadata = self.metadata_file_contents()
+        self.title = metadata["title"]
+        upload_date = metadata["upload_date"]
+        self.published = datetime.datetime.strptime(upload_date, "%Y%m%d").date()
+        self.duration = datetime.timedelta(seconds=metadata["duration"])
+        self.save()
+
+    def import_livechat(self, delete_previous=False):
+        livechat_questions = self.live_chat_file_contents()
+
+        if delete_previous:
+            self.livechatmessage_set.all().delete()
+
+        timestamp_author_counter = Counter()
+        created, updated = 0, 0
         for question in livechat_questions:
-            LiveChatMessage.objects.create(
+            counter_key = question["author"], question["timestamp"]
+            _, was_created = LiveChatMessage.objects.update_or_create(
                 video=self,
                 timestamp=question["timestamp"],
                 author=question["author"],
-                message=question["message"],
+                counter=timestamp_author_counter[counter_key],
+                defaults={"message": question["message"]},
             )
+            timestamp_author_counter[counter_key] += 1
+            if was_created:
+                created += 1
+            else:
+                updated += 1
+        return created, updated
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField()
     description = models.TextField(blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "tag"
@@ -192,6 +201,8 @@ class Question(models.Model):
     question = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
     audio_file = models.FileField(upload_to=question_audiofile_path, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "question"
@@ -264,7 +275,10 @@ class LiveChatMessage(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     timestamp = models.DurationField()
     author = models.CharField(max_length=100)
+    counter = models.IntegerField(blank=True, default=0)
     message = models.TextField(blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"[{self.timestamp}] {self.author}: {self.message_trunc()}"
@@ -278,10 +292,7 @@ class LiveChatMessage(models.Model):
     class Meta:
         verbose_name = "livechat message"
         verbose_name_plural = "livechat messages"
-        ordering = (
-            "video__published",
-            "timestamp",
-        )
+        ordering = ("video__published", "timestamp", "counter", "id")
 
 
 class YoutubePost(models.Model):
@@ -311,10 +322,10 @@ class YoutubePost(models.Model):
         published = updated = thumbnail_url = None
         if "published_parsed" in entry:
             naive_gmt_dt = time.mktime(entry.published_parsed)
-            published = datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
+            published = datetime.datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
         if "updated_parsed" in entry:
             naive_gmt_dt = time.mktime(entry.updated_parsed)
-            updated = datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
+            updated = datetime.datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
         if "media_thumbnail" in entry:
             try:
                 thumbnail_url = entry.media_thumbnail[0]["url"]

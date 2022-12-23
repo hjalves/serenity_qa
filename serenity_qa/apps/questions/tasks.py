@@ -20,12 +20,16 @@ logger = get_task_logger(__name__)
 
 
 @shared_task(bind=True, base=JobTask, description="Download metadata")
-def youtube_download_metadata(
-    self, url, download_dir=None, live_chat=True, subtitles=True
-):
-    self.description = f"{self.description}: {url}"
-    return youtube_dl_download(
-        url,
+def download_metadata(self, video_id, live_chat=True, subtitles=True):
+    video = Video.objects.get(id=video_id)
+    self.description = f"{self.description}: {video.code}"
+
+    download_dir = video.metadata_path().parent
+    logger.info(f"Will download into: {download_dir}")
+    download_dir.mkdir(parents=True, exist_ok=True)
+
+    youtube_dl_download(
+        video.url,
         download_dir,
         info=True,
         skip_download=True,
@@ -34,9 +38,27 @@ def youtube_download_metadata(
         subtitles=subtitles,
     )
 
+    imported = []
+
+    if video.metadata_path().exists():
+        video.import_metadata()
+        imported.append(message := f"metadata for '{video}'")
+        logger.info(f"Imported {message}")
+
+    if video.live_chat_path().exists():
+        created, updated = video.import_livechat()
+        message = f"livechat messages (created={created}, updated={updated})"
+        imported.append(message)
+        logger.info(f"Imported {message}")
+
+    if not imported:
+        return "Nothing to import"
+    else:
+        return "Imported " + ", ".join(imported)
+
 
 @shared_task(bind=True, base=JobTask, description="Download audio")
-def youtube_download_audio(self, url, download_dir=None):
+def download_audio(self, url, download_dir=None):
     def progress_hook(info):
         status = info["status"]
         message = f"Status: {status}"

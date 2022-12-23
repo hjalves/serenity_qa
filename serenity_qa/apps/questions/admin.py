@@ -29,8 +29,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     actions = (
         "download_audio",
         "download_metadata",
-        "fill_metadata",
-        "build_livechat",
+        "import_metadata",
     )
     readonly_fields = (
         "link",
@@ -103,17 +102,14 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     download_metadata.short_description = "Download metadata, subtitles, live chat"
 
-    def fill_metadata(self, request, queryset):
+    def import_metadata(self, request, queryset):
         for obj in queryset.all():
-            obj.fill_metadata()
+            if obj.metadata_path().exists():
+                obj.import_metadata()
+            if obj.live_chat_path().exists():
+                obj.import_livechat()
 
-    fill_metadata.short_description = "Fill metadata"
-
-    def build_livechat(self, request, queryset):
-        for obj in queryset.all():
-            obj.build_livechat_questions()
-
-    build_livechat.short_description = "Build livechat questions"
+    import_metadata.short_description = "Import metadata"
 
     @action_view(
         label="Transcription",

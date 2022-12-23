@@ -30,7 +30,7 @@ class JobLogRedisHandler(logging.Handler):
     ):
         super(JobLogRedisHandler, self).__init__(level)
         self.task_id = task_request.id
-        self.task_name = task_request.task
+        self.task_name = task_request.get("task")
         self.redis_stream = f"job:{self.task_id}"
         self.redis_client = redis_client or get_job_redis_connection()
         self.formatter = JsonFormatter(reserved_attrs=())
@@ -68,8 +68,8 @@ class JobTask(Task):
 
     def apply_async(self, args=None, kwargs=None, task_id=None, **extra):
         task_id = task_id or uuid()
-        if 'description' in extra:
-            self.description = extra['description']
+        if "description" in extra:
+            self.description = extra["description"]
         job = Job.objects.create(
             task_id=task_id,
             task_name=self.name,
@@ -82,18 +82,21 @@ class JobTask(Task):
 
     def __call__(self, *args, **kwargs):
         setup_logger_redirection(task_request=self.request)
-        if 'description' in self.request.properties:
-            self.description = self.request.properties['description']
-        job, _ = Job.objects.update_or_create(
-            task_id=self.request.id,
-            defaults={
-                "state": celery.states.STARTED,
-                "started_at": timezone.now(),
-                "task_name": self.request.task,
-                "description": self.description or "",
-            },
-        )
-        self.request.job = job
+        properties = self.request.get("properties") or {}
+        if "description" in properties:
+            self.description = properties["description"]
+        if self.request.get('task'):
+            # Only when in celery worker (task execution context)
+            job, _ = Job.objects.update_or_create(
+                task_id=self.request.id,
+                defaults={
+                    "state": celery.states.STARTED,
+                    "started_at": timezone.now(),
+                    "task_name": self.request.task,
+                    "description": self.description or "",
+                },
+            )
+            self.request.job = job
         return super(JobTask, self).__call__(*args, **kwargs)
 
     def after_return(self, status, retval, task_id, args, kwargs, einfo):

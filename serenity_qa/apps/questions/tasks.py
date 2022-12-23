@@ -1,7 +1,9 @@
 from tempfile import TemporaryFile
 
+import feedparser
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.conf import settings
 from django.core import serializers
 from django.utils import timezone
 
@@ -11,7 +13,7 @@ from serenity_qa.apps.questions.dumpdata import (
     ProgressWrapper,
     get_objects_from_querysets,
 )
-from serenity_qa.apps.questions.models import Video
+from serenity_qa.apps.questions.models import Video, YoutubePost
 from serenity_qa.apps.questions.utils import serializer_format_to_mimetype
 
 logger = get_task_logger(__name__)
@@ -88,4 +90,25 @@ def video_dump_data(self, video_id, models, format, **extra):
             description=f"{format.upper()} exported file ({', '.join(models)})",
             content_type=serializer_format_to_mimetype(format),
         )
+    return result
+
+
+@shared_task(bind=True, base=JobTask, description="Update YouTube feed")
+def update_feed(self):
+    parsed = feedparser.parse(settings.YOUTUBE_RSS)
+    new_entries = 0
+    for entry in parsed.entries:
+        post, created = YoutubePost.update_or_create_from_feedparser_entry(entry)
+        logger.debug(
+            "%s: %s - %s (published %s)",
+            "created" if created else "updated",
+            entry.id,
+            entry.title,
+            entry.published,
+        )
+        if created:
+            new_entries += 1
+    result = "{} new entries".format(new_entries if new_entries > 0 else "no")
+    logger.info(result)
+    self.description = f"{self.description}: {result}"
     return result

@@ -21,7 +21,7 @@ class Job(models.Model):
     READY_STATES = ("SUCCESS", "FAILURE", "REVOKED")
 
     task_id = models.CharField(max_length=255, unique=True)
-    task_name = models.CharField(max_length=255)
+    task_name = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=500, blank=True)
     state = models.CharField(max_length=100, choices=STATE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)

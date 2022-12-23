@@ -85,7 +85,7 @@ class JobTask(Task):
         properties = self.request.get("properties") or {}
         if "description" in properties:
             self.description = properties["description"]
-        if self.request.get('task'):
+        if self.request.get("task"):
             # Only when in celery worker (task execution context)
             job, _ = Job.objects.update_or_create(
                 task_id=self.request.id,
@@ -117,6 +117,12 @@ class JobTask(Task):
         job.finished_at = timezone.now()
         job.save()
         job.refresh_admin_page()
+
+    def set_description(self, description):
+        self.description = description
+        job = self.request.job
+        job.description = description
+        job.save()
 
     def log_progress(
         self,

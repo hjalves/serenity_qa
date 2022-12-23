@@ -227,7 +227,7 @@ LOGGING = {
             },
         },
     },
-    "root": {"level": "DEBUG", "handlers": ["console"]},
+    "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
         "asyncio": {"level": "INFO"},
         "daphne": {"level": "INFO"},

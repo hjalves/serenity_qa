@@ -126,8 +126,13 @@ class Video(models.Model):
     def download_metadata(self, live_chat=False, subtitles=False):
         from .tasks import download_metadata
 
-        return download_metadata.delay(
-            video_id=self.id, live_chat=live_chat, subtitles=subtitles
+        return download_metadata.apply_async(
+            kwargs={
+                "video_id": self.id,
+                "live_chat": live_chat,
+                "subtitles": subtitles,
+            },
+            description=download_metadata.description + f": {self.code}",
         )
 
     def import_metadata(self):

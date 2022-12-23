@@ -22,7 +22,6 @@ logger = get_task_logger(__name__)
 @shared_task(bind=True, base=JobTask, description="Download metadata")
 def download_metadata(self, video_id, live_chat=True, subtitles=True):
     video = Video.objects.get(id=video_id)
-    self.description = f"{self.description}: {video.code}"
 
     download_dir = video.metadata_path().parent
     logger.info(f"Will download into: {download_dir}")
@@ -44,6 +43,7 @@ def download_metadata(self, video_id, live_chat=True, subtitles=True):
         video.import_metadata()
         imported.append(message := f"metadata for '{video}'")
         logger.info(f"Imported {message}")
+        self.set_description(f"{self.description} [{video}]")
 
     if video.live_chat_path().exists():
         created, updated = video.import_livechat()

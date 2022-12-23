@@ -22,7 +22,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
 
@@ -238,10 +238,11 @@ LOGGING = {
         "requests": {"level": "DEBUG"},
         "paramiko": {"level": "DEBUG"},
         "serenity_qa": {"level": "DEBUG"},
-        "questions": {"level": "DEBUG"},
     },
 }
 
 # Other settings
 
-YOUTUBE_RSS = 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3ts8coMP645hZw9JSD3pqQ'
+YOUTUBE_RSS = (
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC3ts8coMP645hZw9JSD3pqQ"
+)

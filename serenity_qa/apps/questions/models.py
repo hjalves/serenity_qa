@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import time
 from datetime import timezone, datetime
 from urllib.parse import urljoin
@@ -11,6 +12,8 @@ from django.urls import reverse
 
 from .download import youtube_dl_download
 from .utils import trim_audio_file, parse_jsonl_live_chat
+
+logger = logging.getLogger(__name__)
 
 
 class VideoManager(models.Manager):
@@ -304,7 +307,7 @@ class YoutubePost(models.Model):
         return self.title
 
     @classmethod
-    def add_from_feedparser_entry(cls, entry):
+    def update_or_create_from_feedparser_entry(cls, entry):
         published = updated = thumbnail_url = None
         if "published_parsed" in entry:
             naive_gmt_dt = time.mktime(entry.published_parsed)
@@ -314,7 +317,7 @@ class YoutubePost(models.Model):
             updated = datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
         if "media_thumbnail" in entry:
             try:
-                thumbnail_url = entry.media_thumbnail[0]['url']
+                thumbnail_url = entry.media_thumbnail[0]["url"]
             except (KeyError, IndexError, TypeError):
                 pass
 
@@ -329,5 +332,4 @@ class YoutubePost(models.Model):
             "summary": entry.summary,
             "thumbnail_url": thumbnail_url or "",
         }
-        post, _ = cls.objects.update_or_create(entry_id=entry.id, defaults=defaults)
-        return post
+        return cls.objects.update_or_create(entry_id=entry.id, defaults=defaults)

@@ -6,12 +6,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from .apps.questions import views
+from .apps.questions import views as questions_views
+from .apps.cms import views as cms_views
 from .components.question_list import views as question_list_views
 
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
-    path("video/<int:video>/", views.VideoView.as_view(), name="video"),
+    path("", cms_views.IndexView.as_view(), name="index"),
+    path("<slug:page>/", cms_views.PageView.as_view(), name="page"),
+    path("video/<int:video>/", questions_views.VideoView.as_view(), name="video"),
     path(
         "admin/htmx/video/<int:video>/questions/",
         question_list_views.QuestionListView.as_view(),

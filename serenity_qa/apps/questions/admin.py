@@ -27,8 +27,8 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "livechat_messages",
     )
     actions = (
-        "download_audio",
         "download_metadata",
+        "download_audio",
         "import_metadata",
     )
     readonly_fields = (
@@ -100,7 +100,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         for obj in queryset.all():
             obj.download_metadata(live_chat=True, subtitles=True)
 
-    download_metadata.short_description = "Download metadata, subtitles, live chat"
+    download_metadata.short_description = "Download metadata"
 
     def import_metadata(self, request, queryset):
         for obj in queryset.all():

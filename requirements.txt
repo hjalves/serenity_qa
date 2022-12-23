@@ -72,6 +72,8 @@ h11==0.14.0
     # via uvicorn
 kombu==5.2.4
     # via celery
+markdown==3.4.1
+    # via -r requirements.in
 mutagen==1.46.0
     # via yt-dlp
 packaging==22.0

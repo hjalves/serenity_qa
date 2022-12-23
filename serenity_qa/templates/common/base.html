@@ -1,0 +1,18 @@
+{% load static common_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <title>SerenityOS Q&A</title>
+</head>
+<body>
+<aside>
+  {% navbar %}
+</aside>
+<main class="content">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

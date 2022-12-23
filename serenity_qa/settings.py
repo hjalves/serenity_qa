@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django_htmx",
     # Project
     "serenity_qa.apps.common",
+    "serenity_qa.apps.cms",
     "serenity_qa.apps.questions",
     "serenity_qa.admin.MyAdminConfig",
 ]
@@ -178,6 +179,16 @@ MEDIA_URL = "/media/"
 
 DOWNLOAD_DIR = MEDIA_ROOT / "youtube"
 DOWNLOAD_URL = MEDIA_URL + "youtube/"
+
+# Admin customization
+
+SIDEBAR_EXCLUDE = [
+    "auth",
+    "django_celery_beat.ClockedSchedule",
+    "django_celery_beat.CrontabSchedule",
+    "django_celery_beat.SolarSchedule",
+    "django_celery_beat.IntervalSchedule",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

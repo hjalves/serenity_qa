@@ -17,6 +17,9 @@ a:hover {
     color: #222;
 }
 
+a.current {
+    font-weight: bold;
+}
 
 aside {
     position: fixed;

@@ -1,0 +1,8 @@
+{% extends "common/base.html" %}
+{% load static cms_extras %}
+
+{% block content %}
+    <article class="page">
+      {{ page.content | markdown }}
+    </article>
+{% endblock %}

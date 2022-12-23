@@ -10,7 +10,7 @@ from django.utils.http import urlencode
 from django_object_actions import DjangoObjectActions
 
 from .forms import VideoTaskForm
-from .models import Video, Tag, Question, LiveChatMessage
+from .models import Video, Tag, Question, LiveChatMessage, YoutubePost
 from .tasks import video_dump_data
 from .widgets import DurationWidget
 from ..common.decorators import action_view
@@ -230,3 +230,15 @@ class LiveChatMessageAdmin(admin.ModelAdmin):
         return obj.video.published
 
     _published.admin_order_field = "video__published"
+
+
+@admin.register(YoutubePost)
+class YoutubePostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'published', 'updated', 'created_on')
+    readonly_fields = ('created_on', 'updated_on')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

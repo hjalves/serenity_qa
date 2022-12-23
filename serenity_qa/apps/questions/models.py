@@ -1,5 +1,7 @@
 import datetime
 import json
+import time
+from datetime import timezone, datetime
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -277,3 +279,55 @@ class LiveChatMessage(models.Model):
             "video__published",
             "timestamp",
         )
+
+
+class YoutubePost(models.Model):
+    entry_id = models.CharField("entry ID", max_length=100, unique=True)
+    yt_videoid = models.CharField("YouTube video ID", max_length=50)
+    yt_channelid = models.CharField("YouTube channel ID", max_length=50)
+    link = models.URLField(blank=True)
+    title = models.CharField(max_length=200, blank=True)
+    summary = models.TextField(blank=True)
+    author = models.CharField(max_length=100, blank=True)
+    thumbnail_url = models.URLField("thumbnail URL", blank=True)
+    published = models.DateTimeField(null=True, blank=True)
+    updated = models.DateTimeField(null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "YouTube post"
+        verbose_name_plural = "YouTube posts"
+        ordering = ("-published",)
+
+    def __str__(self):
+        return self.title
+
+    @classmethod
+    def add_from_feedparser_entry(cls, entry):
+        published = updated = thumbnail_url = None
+        if "published_parsed" in entry:
+            naive_gmt_dt = time.mktime(entry.published_parsed)
+            published = datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
+        if "updated_parsed" in entry:
+            naive_gmt_dt = time.mktime(entry.updated_parsed)
+            updated = datetime.fromtimestamp(naive_gmt_dt, timezone.utc)
+        if "media_thumbnail" in entry:
+            try:
+                thumbnail_url = entry.media_thumbnail[0]['url']
+            except (KeyError, IndexError, TypeError):
+                pass
+
+        defaults = {
+            "yt_videoid": entry.yt_videoid,
+            "yt_channelid": entry.yt_channelid,
+            "link": entry.link,
+            "title": entry.title,
+            "author": entry.author,
+            "published": published,
+            "updated": updated,
+            "summary": entry.summary,
+            "thumbnail_url": thumbnail_url or "",
+        }
+        post, _ = cls.objects.update_or_create(entry_id=entry.id, defaults=defaults)
+        return post

@@ -80,7 +80,13 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
         ),
         ("Job log", {"fields": ("job_log",), "classes": ("collapse",)}),
     )
-    changelist_actions = ("dumpdata",)
+    # changelist_actions = ("dumpdata",)
+
+    # def get_autorefresh(self, object_id=None):
+    #     if object_id:
+    #         object = Job.objects.get(id=object_id)
+    #         if object.state not in Job.READY_STATES:
+    #             return 2
 
     def has_add_permission(self, request):
         return False

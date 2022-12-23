@@ -147,7 +147,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Lisbon"
 
 USE_I18N = True
 
@@ -241,3 +241,7 @@ LOGGING = {
         "questions": {"level": "DEBUG"},
     },
 }
+
+# Other settings
+
+YOUTUBE_RSS = 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3ts8coMP645hZw9JSD3pqQ'

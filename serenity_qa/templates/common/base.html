@@ -1,12 +1,13 @@
-{% load static common_extras %}
+{% load static common_extras component_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>SerenityOS Q&A</title>
-  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-  {% block extrastyle %}{% endblock %}
+  <link rel="shortcut icon" type="image/png" href="{% static 'icon/ladyball-alt.png' %}" />
+  <link href="{% static 'css/style.css' %}" media="all" rel="stylesheet">
+  {% block extrastyle %}{% component_css_dependencies %}{% endblock %}
 </head>
 <body>
 <aside>

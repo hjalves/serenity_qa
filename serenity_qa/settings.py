@@ -56,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_components.middleware.ComponentDependencyMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
 ]
 
@@ -85,6 +86,8 @@ TEMPLATES = [
         },
     },
 ]
+
+COMPONENTS = {"RENDER_DEPENDENCIES": True}
 
 WSGI_APPLICATION = "serenity_qa.wsgi.application"
 

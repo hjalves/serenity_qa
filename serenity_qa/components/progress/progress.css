@@ -1,0 +1,77 @@
+.progress {
+    background-color: white;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    /*box-shadow: 2px 2px 3px 0px #ddd;*/
+}
+
+.progress-body {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    /*min-height: 3em;*/
+    line-height: 1.5em;
+}
+
+.progress-body .timestamp {
+    font-family: monospace;
+    float: left;
+    padding-right: 15px;
+    font-size: 1.0em;
+}
+
+.progress-body .content {
+}
+
+.progress-header {
+    font-size: 0.8em;
+    border-bottom: 1px solid #eee;
+    background: #f7f7f7;
+    text-align: center;
+    padding: 2px;
+}
+
+.progress-header .title {
+    padding: 3px 5px;
+    color: #777;
+    border-bottom: none;
+    width: 100%;
+    text-align: center;
+}
+.progress-footer {
+    color: #777;
+    padding: 2px;
+    font-size: 0.8em;
+    text-align: center;
+    background: #f7f7f7;
+    border-top: 1px solid #eee;
+}
+
+.tags {
+    margin: 2px;
+    padding: 1px;
+    float: right;
+}
+
+.clear {
+    clear: both;
+}
+
+.tag {
+    display: inline-block;
+    padding: 1px 5px;
+    background: #dbb;
+    color: #FFF;
+    border-bottom: none;
+    margin-left: 2px;
+    border-radius: 2px;
+    text-shadow: 1px 1px #0002;
+}
+
+.tag:hover {
+    color: #FFF;
+    font-weight: normal;
+    text-decoration: none;
+    background: #888;
+    border-bottom: none;
+}

@@ -1,10 +1,6 @@
 {% extends "common/base.html" %}
 {% load static questions_extras component_tags %}
 
-{% block extrastyle %}
-  {% component_css_dependencies %}
-{% endblock %}
-
 {% block content %}
   {% for question in questions %}
     {% component "question" question %}

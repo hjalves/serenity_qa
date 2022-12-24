@@ -1,8 +1,16 @@
 {% extends "common/base.html" %}
-{% load static cms_extras %}
+{% load static cms_extras component_tags %}
 
 {% block content %}
-    <article class="page">
-      {{ page.content | markdown }}
+  <article class="page">
+    {{ page.content | markdown }}
+  </article>
+  {% for section in page.enabled_sections %}
+    {% component section.component arguments=section.arguments %}
+  {% endfor %}
+  {% if page.footer %}
+    <article class="footer">
+      {{ page.footer | markdown }}
     </article>
+  {% endif %}
 {% endblock %}

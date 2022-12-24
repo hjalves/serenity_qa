@@ -2,15 +2,14 @@
   <ul>
     <li class="title">SerenityOS Q&A</li>
     {% for page in pages %}
-      <li><a href="{% url 'page' page.slug %}"
-             class="{% if self == page %}current{% endif %}">{{ page.title }}</a></li>
+      {% if not page.root_page %}{% url 'page' page.slug as page_url %}{% else %}{% url 'index' as page_url %}{% endif %}
+      <li><a href="{{ page_url }}" class="{% if self == page %}current{% endif %}">{{ page.title }}</a></li>
     {% endfor %}
   </ul>
   <ul>
     <li class="title">Office hours</li>
     {% for video in videos %}
-      <li><a href="{% url 'video' video.id %}"
-             class="{% if self == video %}current{% endif %}">{{ video.published }}</a></li>
+      <li><a href="{% url 'video' video.id %}" class="{% if self == video %}current{% endif %}">{{ video.published }}</a></li>
     {% endfor %}
   </ul>
   <ul>

@@ -19,6 +19,7 @@ class PageView(TemplateView):
 
     def get_context_data(self, page=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        page = get_object_or_404(Page.objects.published(), slug=page)
+        kwargs = {"root_page": True} if not page else {"slug": page}
+        page = get_object_or_404(Page.objects.published(), **kwargs)
         context["self"] = context["page"] = page
         return context

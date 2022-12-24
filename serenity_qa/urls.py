@@ -11,8 +11,7 @@ from .apps.cms import views as cms_views
 from .components.question_list import views as question_list_views
 
 urlpatterns = [
-    path("", cms_views.IndexView.as_view(), name="index"),
-    path("<slug:page>/", cms_views.PageView.as_view(), name="page"),
+    path("", cms_views.PageView.as_view(), name="index"),
     path("video/<int:video>/", questions_views.VideoView.as_view(), name="video"),
     path(
         "admin/htmx/video/<int:video>/questions/",
@@ -25,4 +24,5 @@ urlpatterns = [
         name="question-list-detail",
     ),
     path("admin/", admin.site.urls),
+    path("<slug:page>/", cms_views.PageView.as_view(), name="page"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

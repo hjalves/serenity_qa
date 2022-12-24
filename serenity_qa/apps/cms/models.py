@@ -30,7 +30,7 @@ class Page(models.Model):
     class Meta:
         verbose_name = "page"
         verbose_name_plural = "pages"
-        ordering = ['-root_page', 'created_on']
+        ordering = ["-root_page", "created_on"]
 
     def __str__(self):
         return self.title

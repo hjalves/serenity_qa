@@ -6,7 +6,7 @@
 }
 
 .progress-body {
-    padding: 10px;
+    padding: 10px 40px;
     display: flex;
     align-items: center;
     /*min-height: 3em;*/
@@ -36,7 +36,6 @@
     color: #777;
     border-bottom: none;
     width: 100%;
-    text-align: center;
 }
 .progress-footer {
     color: #777;
@@ -74,4 +73,27 @@
     text-decoration: none;
     background: #888;
     border-bottom: none;
+}
+
+
+dl.progress-status {
+    font-size: 0.9em;
+    width: 100%;
+}
+
+dl.progress-status dt {
+    color: #777;
+    border-bottom: 1px solid #eee;
+    line-height: 1.5em;
+
+}
+
+dl.progress-status dd {
+    text-align: left;
+    margin-left: 0;
+    margin-bottom: 1em;
+}
+
+dl.progress-status > dd:last-child {
+    margin-bottom: 0;
 }

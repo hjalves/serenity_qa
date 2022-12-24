@@ -6,20 +6,20 @@ body {
 }
 
 a {
-    text-decoration: none;
-    border-bottom: 1px solid #c9c9c9;
+    text-decoration: underline solid #c9c9c9;
     color: #222;
 }
 
 a:hover {
+    text-decoration-thickness: 2px;
     font-weight: bold;
-    border-bottom: 2px solid #c9c9c9;
     color: #222;
 }
 
 a.current {
     font-weight: bold;
 }
+
 
 aside {
     position: fixed;
@@ -76,6 +76,7 @@ main.content {
     border: 1px solid #ddd;
     word-wrap: break-word;
     margin-bottom: 10px;
+    line-height: 1.5em;
 }
 
 .footer {

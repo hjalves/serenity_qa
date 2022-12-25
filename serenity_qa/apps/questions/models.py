@@ -216,7 +216,6 @@ class Question(models.Model):
     duration = models.DurationField(blank=True, null=True)
     question = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
-    audio_file = models.FileField(upload_to=question_audiofile_path, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -304,6 +303,19 @@ class Question(models.Model):
         with path.open(mode="rb") as f:
             self.audio_file = File(f, name=path.name)
             self.save()
+
+
+class QuestionAudio(models.Model):
+    question = models.OneToOneField(Question, on_delete=models.CASCADE)
+    audio_file = models.FileField(upload_to=question_audiofile_path, blank=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "question audio"
+        verbose_name_plural = "question audio"
+
+    def __str__(self):
+        return f"{self.audio_file}"
 
 
 class LiveChatMessage(models.Model):

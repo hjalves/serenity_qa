@@ -10,7 +10,7 @@ from django.utils.http import urlencode
 from django_object_actions import DjangoObjectActions
 
 from .forms import VideoTaskForm
-from .models import Video, Tag, Question, LiveChatMessage, YoutubePost
+from .models import Video, Tag, Question, LiveChatMessage, YoutubePost, QuestionAudio
 from .tasks import video_dump_data
 from .widgets import DurationWidget
 from ..common.decorators import action_view
@@ -170,12 +170,19 @@ class QuestionForm(forms.ModelForm):
             timestamp_field.initial = last_question.timestamp
 
 
+class QuestionAudioAdmin(admin.TabularInline):
+    model = QuestionAudio
+    readonly_fields = ("audio_file", "updated_on")
+    extra = 0
+
+
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
+    inlines = [QuestionAudioAdmin]
     form = QuestionForm
     list_display = ("__str__", "_timestamp_link", "duration", "_published", "_tags")
     list_filter = ("video", "tags")
-    readonly_fields = ("_url", "duration", "audio_file", "created_on", "updated_on")
+    readonly_fields = ("_url", "duration", "created_on", "updated_on")
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
     ordering = ("-id",)
     actions = ("update_duration", "generate_audio")

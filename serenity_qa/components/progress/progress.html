@@ -13,8 +13,10 @@
       <dt>{{ questions_tagged }} question tagged</dt>
       <dd>{{ minutes_tagged }} minutes of {{ minutes_total }} total minutes of content, about {{ percentage_tagged }}% done.</dd>
 
-      <dt>XXX remaining questions</dt>
-      <dd>There is still an estimated XXX questions and comments to be transcribed (± 123, 95% CI).</dd>
+      {% if questions_remaining %}
+      <dt>{{ questions_remaining }} remaining questions</dt>
+      <dd>There is still an estimated {{ questions_remaining }} questions and comments to be transcribed (± {{ questions_interval }}, 95% CI).</dd>
+      {% endif %}
 
     </dl>
   </div>

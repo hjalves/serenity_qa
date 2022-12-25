@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join
@@ -230,9 +230,21 @@ class LiveChatMessageAdmin(admin.ModelAdmin):
 
 @admin.register(YoutubePost)
 class YoutubePostAdmin(admin.ModelAdmin):
-    list_display = ("title", "published", "updated", "created_on", "is_qa_video")
-    readonly_fields = ("created_on", "updated_on", "is_qa_video")
+    list_display = (
+        "title",
+        "published",
+        "updated",
+        "created_on",
+        "is_qa_video",
+        "video_id",
+    )
+    readonly_fields = ("created_on", "updated_on", "is_qa_video", "video_id")
     actions = ["add_as_video"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        subquery = Video.objects.filter(code=OuterRef("yt_videoid")).values("id")[:1]
+        return qs.annotate(video_id=Subquery(subquery))
 
     def has_add_permission(self, request):
         return False
@@ -251,3 +263,6 @@ class YoutubePostAdmin(admin.ModelAdmin):
 
     is_qa_video.short_description = "QA?"
     is_qa_video.boolean = True
+
+    def video_id(self, obj):
+        return obj.video_id

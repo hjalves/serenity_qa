@@ -68,7 +68,7 @@ def download_audio(self, url, download_dir=None):
             message=message,
         )
 
-    self.description = f"{self.description}: {url}"
+    self.set_description(f"{self.description}: {url}")
     return youtube_dl_download(
         url,
         download_dir,
@@ -137,5 +137,5 @@ def update_feed(self):
                     logger.info("Q&A video created with code=%s", video.code)
     result = "{} new entries".format(new_entries if new_entries > 0 else "no")
     logger.info(result)
-    self.description = f"{self.description}: {result}"
+    self.set_description(f"{self.description}: {result}")
     return result

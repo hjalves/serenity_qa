@@ -84,8 +84,7 @@ class JobTask(Task):
     def __call__(self, *args, **kwargs):
         setup_logger_redirection(task_request=self.request)
         properties = self.request.get("properties") or {}
-        if "description" in properties:
-            self.description = properties["description"]
+        description = properties.get("description")
         if self.request.get("task"):
             # Only when in celery worker (task execution context)
             job, _ = Job.objects.update_or_create(
@@ -94,7 +93,7 @@ class JobTask(Task):
                     "state": celery.states.STARTED,
                     "started_at": timezone.now(),
                     "task_name": self.request.task,
-                    "description": self.description or "",
+                    "description": description or self.description or "",
                 },
             )
             self.request.job = job
@@ -106,7 +105,6 @@ class JobTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
         job = self.request.job
         job.state = celery.states.SUCCESS
-        job.description = self.description
         job.finished_at = timezone.now()
         job.save()
         job.refresh_admin_page()
@@ -118,13 +116,11 @@ class JobTask(Task):
             pass
         else:
             job.state = celery.states.FAILURE
-            job.description = self.description
             job.finished_at = timezone.now()
             job.save()
             job.refresh_admin_page()
 
     def set_description(self, description):
-        self.description = description
         job = self.request.job
         job.description = description
         job.save()

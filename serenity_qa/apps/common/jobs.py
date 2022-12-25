@@ -68,13 +68,14 @@ class JobTask(Task):
 
     def apply_async(self, args=None, kwargs=None, task_id=None, **extra):
         task_id = task_id or uuid()
+        description = self.description
         if "description" in extra:
-            self.description = extra["description"]
+            description = extra["description"]
         job = Job.objects.create(
             task_id=task_id,
             task_name=self.name,
             state=celery.states.PENDING,
-            description=self.description or "",
+            description=description or "",
         )
         result = super().apply_async(args, kwargs, task_id, **extra)
         result.job = job
@@ -111,12 +112,16 @@ class JobTask(Task):
         job.refresh_admin_page()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        job = self.request.job
-        job.state = celery.states.FAILURE
-        job.description = self.description
-        job.finished_at = timezone.now()
-        job.save()
-        job.refresh_admin_page()
+        try:
+            job = self.request.job
+        except AttributeError:
+            pass
+        else:
+            job.state = celery.states.FAILURE
+            job.description = self.description
+            job.finished_at = timezone.now()
+            job.save()
+            job.refresh_admin_page()
 
     def set_description(self, description):
         self.description = description

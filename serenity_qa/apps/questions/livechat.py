@@ -17,11 +17,12 @@ def handle_live_chat_obj(obj):
     action = actions[0]
     for key, value in action.items():
         assert key in {
+            "addBannerToLiveChatCommand",
             "addChatItemAction",
             "addLiveChatTickerItemAction",
-            "addBannerToLiveChatCommand",
             "clickTrackingParams",
-        }
+            "removeBannerForLiveChatCommand",
+        }, f"unknown key: {key}"
         if key == "addChatItemAction":
             if res := handle_add_chat_item_action(value):
                 res["timestamp"] = datetime.timedelta(seconds=int(offset_time) // 1000)

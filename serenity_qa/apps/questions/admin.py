@@ -175,7 +175,7 @@ class QuestionAdmin(admin.ModelAdmin):
     form = QuestionForm
     list_display = ("__str__", "_timestamp_link", "duration", "_published", "_tags")
     list_filter = ("video", "tags")
-    readonly_fields = ("_url", "duration", "audio_file")
+    readonly_fields = ("_url", "duration", "audio_file", "created_on", "updated_on")
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
     ordering = ("-id",)
     actions = ("update_duration", "generate_audio")
@@ -203,10 +203,9 @@ class QuestionAdmin(admin.ModelAdmin):
 
     def update_duration(self, request, queryset):
         for obj in queryset.all():
-            obj.duration = obj.compute_duration()
-            obj.save(update_fields=["duration"])
+            obj.refresh_duration()
 
-    update_duration.short_description = "Update duration"
+    update_duration.short_description = "Refresh duration"
 
     def generate_audio(self, request, queryset):
         for obj in queryset.all():

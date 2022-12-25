@@ -1,25 +1,25 @@
 <article {% if id %}id="{{ id }}"{% endif %} class="progress">
   <div class="progress-header">
-    <a class="title" href="#{{ id }}">Project Status</a>
+    <a class="title" {% if id %}href="#{{ id }}"{% endif %}>Project Status</a>
   </div>
   <div class="progress-body">
     <dl class="progress-status">
       <dt>Summary</dt>
-      <dd>From 34 Q&A videos, 5 videos have been worked on, 4 fully transcribed.</dd>
+      <dd>From {{ videos_total }} Q&A videos, {{ videos_worked }} videos have been worked on, {{ videos_done }} fully transcribed.</dd>
 
-      <dt>34 questions added</dt>
-      <dd>78 minutes of 1802 total minutes of content, about 5% done.</dd>
+      <dt>{{ questions_added }} questions added</dt>
+      <dd>{{ minutes_added }} minutes of {{ minutes_total }} total minutes of content, about {{ percentage_added }}% done.</dd>
 
-      <dt>1 question tagged</dt>
-      <dd>5 minutes of 1802 total minutes of content, about 6% done.</dd>
+      <dt>{{ questions_tagged }} question tagged</dt>
+      <dd>{{ minutes_tagged }} minutes of {{ minutes_total }} total minutes of content, about {{ percentage_tagged }}% done.</dd>
 
-      <dt>1100 remaining questions</dt>
-      <dd>There is still an estimated 1100 questions and comments to be transcribed (± 123, 95% CI).</dd>
+      <dt>XXX remaining questions</dt>
+      <dd>There is still an estimated XXX questions and comments to be transcribed (± 123, 95% CI).</dd>
 
     </dl>
   </div>
   <div class="progress-footer">
-    <div>Last changed: 2022-12-24 12:34:56</div>
+    <div>Last changed: {{ last_changed }}</div>
     <div class="clear"></div>
   </div>
 </article>

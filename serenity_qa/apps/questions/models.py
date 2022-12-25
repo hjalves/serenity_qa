@@ -27,6 +27,7 @@ class Video(models.Model):
     title = models.CharField(max_length=200, blank=True)
     published = models.DateField(null=True, blank=True)
     duration = models.DurationField(blank=True, null=True)
+    finished = models.BooleanField("transcription finished", default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -39,6 +40,16 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title or self.code
+
+    def save(self, *args, update_fields=None, **kwargs):
+        super().save(*args, update_fields=update_fields, **kwargs)
+        if not update_fields or "finished" in update_fields:
+            try:
+                last = self.question_set.last()
+            except Question.DoesNotExist:
+                pass
+            else:
+                last.refresh_duration()
 
     def natural_key(self):
         return self.code, self.published
@@ -221,6 +232,33 @@ class Question(models.Model):
     def __str__(self):
         return f"[{self.timestamp}] {self.question_trunc()}"
 
+    def save(self, *args, update_fields=None, **kwargs):
+        super().save(*args, update_fields=update_fields, **kwargs)
+        if not update_fields or "timestamp" in update_fields:
+            self.refresh_duration()
+            self.refresh_previous_duration()
+
+    def refresh_duration(self):
+        self.duration = self.compute_duration()
+        self.save(update_fields=["duration"])
+
+    def refresh_previous_duration(self):
+        try:
+            previous = self.get_previous()
+        except Question.DoesNotExist:
+            pass
+        else:
+            previous.refresh_duration()
+
+    def compute_duration(self):
+        try:
+            next = self.get_next()
+        except Question.DoesNotExist:
+            if self.video.finished:
+                return self.video.duration - self.timestamp
+        else:
+            return next.timestamp - self.timestamp
+
     def natural_key(self):
         return self.video.natural_key() + (self.timestamp,)
 
@@ -255,14 +293,6 @@ class Question(models.Model):
         return self._get_next_or_previous_by_FIELD(
             self._meta.get_field("timestamp"), is_next=True, video_id=self.video_id
         )
-
-    def compute_duration(self):
-        try:
-            next = self.get_next()
-        except Question.DoesNotExist:
-            return self.video.duration - self.timestamp
-        else:
-            return next.timestamp - self.timestamp
 
     def generate_audio(self, delete_previous=True):
         input = self.video.audio_path()

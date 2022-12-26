@@ -44,11 +44,7 @@ class Video(models.Model):
     def save(self, *args, update_fields=None, **kwargs):
         super().save(*args, update_fields=update_fields, **kwargs)
         if not update_fields or "finished" in update_fields:
-            try:
-                last = self.question_set.last()
-            except Question.DoesNotExist:
-                pass
-            else:
+            if last := self.question_set.last():
                 last.refresh_duration()
 
     def natural_key(self):

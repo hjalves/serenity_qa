@@ -24,6 +24,8 @@ ALLOWED_HOSTS = ["*"]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+CSRF_TRUSTED_ORIGINS = ['https://*.serenityos.dev']
+
 # Application definition
 
 INSTALLED_APPS = [

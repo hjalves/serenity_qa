@@ -401,3 +401,17 @@ class YoutubePost(models.Model):
     def is_qa_video(self):
         title = self.title.lower()
         return "office" in title and "hours" in title
+
+
+class ProgressReport(models.Model):
+    indicators = models.JSONField()
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "progress report"
+        verbose_name_plural = "progress reports"
+        ordering = ("-created_on",)
+        get_latest_by = "created_on"
+
+    def __str__(self):
+        return f"{self.created_on}"

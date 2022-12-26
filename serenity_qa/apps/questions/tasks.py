@@ -1,3 +1,4 @@
+from statistics import StatisticsError
 from tempfile import TemporaryFile
 
 import feedparser
@@ -8,12 +9,13 @@ from django.core import serializers
 from django.utils import timezone
 
 from serenity_qa.apps.common.jobs import JobTask
+from serenity_qa.apps.questions import progress
 from serenity_qa.apps.questions.download import youtube_dl_download
 from serenity_qa.apps.questions.dumpdata import (
     ProgressWrapper,
     get_objects_from_querysets,
 )
-from serenity_qa.apps.questions.models import Video, YoutubePost
+from serenity_qa.apps.questions.models import Video, YoutubePost, ProgressReport
 from serenity_qa.apps.questions.utils import serializer_format_to_mimetype
 
 logger = get_task_logger(__name__)
@@ -139,3 +141,38 @@ def update_feed(self):
     logger.info(result)
     self.set_description(f"{self.description}: {result}")
     return result
+
+
+@shared_task()
+def generate_progress_report():
+    logger.info("Generating progress report...")
+    try:
+        questions_total_expected, questions_interval = progress.estimate_questions()
+    except StatisticsError:
+        questions_total_expected, questions_interval = 0, 0
+
+    indicators = {
+        "videos_total": progress.videos_total(),
+        "videos_worked": progress.videos_worked(),
+        "videos_done": progress.videos_done(),
+        "questions_added": (questions_added := progress.questions_added()),
+        "questions_tagged": progress.questions_tagged(),
+        "minutes_total": (minutes_total := progress.minutes_total()),
+        "minutes_added": (minutes_added := progress.minutes_added()),
+        "minutes_tagged": (minutes_tagged := progress.minutes_tagged()),
+        "percentage_added": int(round(minutes_added / minutes_total * 100, 0)),
+        "percentage_tagged": int(round(minutes_tagged / minutes_total * 100, 0)),
+        "questions_remaining": questions_total_expected - questions_added,
+        "questions_interval": questions_interval,
+    }
+
+    try:
+        previous_indicators = ProgressReport.objects.latest().indicators
+    except ProgressReport.DoesNotExist:
+        previous_indicators = {}
+
+    if previous_indicators != indicators:
+        logger.info("Will create a new progress report...")
+        ProgressReport.objects.create(indicators=indicators)
+    else:
+        logger.info("The previous one is the same. Will not create a new object.")

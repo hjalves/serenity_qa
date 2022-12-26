@@ -10,7 +10,15 @@ from django.utils.http import urlencode
 from django_object_actions import DjangoObjectActions
 
 from .forms import VideoTaskForm
-from .models import Video, Tag, Question, LiveChatMessage, YoutubePost, QuestionAudio
+from .models import (
+    Video,
+    Tag,
+    Question,
+    LiveChatMessage,
+    YoutubePost,
+    QuestionAudio,
+    ProgressReport,
+)
 from .tasks import video_dump_data
 from .widgets import DurationWidget
 from ..common.decorators import action_view
@@ -272,3 +280,26 @@ class YoutubePostAdmin(admin.ModelAdmin):
 
     def video_id(self, obj):
         return obj.video_id
+
+
+@admin.register(ProgressReport)
+class ProgressReportAdmin(admin.ModelAdmin):
+    list_display = (
+        "created_on",
+        "videos_total",
+        "questions_added",
+        "percentage_added",
+        "questions_remaining",
+    )
+
+    def percentage_added(self, obj):
+        return obj.indicators.get('percentage_added')
+
+    def videos_total(self, obj):
+        return obj.indicators.get("videos_total")
+
+    def questions_added(self, obj):
+        return obj.indicators.get("questions_added")
+
+    def questions_remaining(self, obj):
+        return obj.indicators.get("questions_remaining")

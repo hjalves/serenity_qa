@@ -54,6 +54,9 @@ class Video(models.Model):
     def natural_key(self):
         return self.code, self.published
 
+    def get_absolute_url(self):
+        return reverse("video", args=(self.id,))
+
     def questions(self):
         return self.question_set.order_by("-timestamp")
 
@@ -266,6 +269,9 @@ class Question(models.Model):
 
     def question_trunc(self):
         return self.question[:80] + "..." if len(self.question) > 80 else self.question
+
+    def get_absolute_url(self):
+        return self.video.get_absolute_url() + f"#{self.element_id()}"
 
     def admin_url(self):
         return reverse("admin:questions_question_change", args=(self.pk,))

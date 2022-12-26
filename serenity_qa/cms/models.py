@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
 
 from serenity_qa.questions.models import Question
 
@@ -36,6 +37,11 @@ class Page(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        if self.root_page:
+            return reverse("index")
+        return reverse("page", args=(self.slug,))
 
     def enabled_sections(self):
         return self.sections.filter(enabled=True)

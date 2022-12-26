@@ -160,8 +160,8 @@ def generate_progress_report():
         "minutes_total": (minutes_total := progress.minutes_total()),
         "minutes_added": (minutes_added := progress.minutes_added()),
         "minutes_tagged": (minutes_tagged := progress.minutes_tagged()),
-        "percentage_added": int(round(minutes_added / minutes_total * 100, 0)),
-        "percentage_tagged": int(round(minutes_tagged / minutes_total * 100, 0)),
+        "percentage_added": round(minutes_added / minutes_total * 100, 1),
+        "percentage_tagged": round(minutes_tagged / minutes_total * 100, 1),
         "questions_remaining": questions_total_expected - questions_added,
         "questions_interval": questions_interval,
     }
@@ -175,4 +175,4 @@ def generate_progress_report():
         logger.info("Will create a new progress report...")
         ProgressReport.objects.create(indicators=indicators)
     else:
-        logger.info("The previous one is the same. Will not create a new object.")
+        logger.info("The previous one is the same. Will not do anything.")

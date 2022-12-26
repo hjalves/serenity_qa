@@ -27,7 +27,11 @@
     font-size: 0.8em;
     border-bottom: 1px solid #ddd;
     background: #bbb;
-    align-items: center;
+    align-items: center;;
+}
+
+.question-header a {
+    text-decoration: none;
 }
 
 .question:target .question-header {
@@ -40,14 +44,12 @@
     color: #FFF;
     border-bottom: none;
     flex-grow: 1;
-    text-decoration: none;
     text-shadow: 1px 1px #0002;
 }
 
 .question-header .title:hover {
     color: #FFF;
     font-weight: normal;
-    text-decoration: none;
     background: #888;
     border-bottom: none;
 }

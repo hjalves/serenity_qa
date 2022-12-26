@@ -1,8 +1,7 @@
 {% load questions_extras %}
 <article id="{{ id }}" class="question">
   <div class="question-header">
-    <a class="title" title="Click to bookmark"
-       href="#{{ id }}">{{ question.video.title }}</a>
+    <a class="title" href="#{{ id }}">{{ question.video.title }}</a>
     <a class="duration" title="Duration"
        href="#">{{ question.duration|format_duration|default:"--" }}</a>
   </div>

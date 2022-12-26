@@ -40,26 +40,26 @@ class JobLogRedisHandler(logging.Handler):
         self.redis_client.xadd(self.redis_stream, {"message": msg})
         self.redis_client.expire(self.redis_stream, self.STREAM_EXPIRE_TIME)
 
+    def install_in(self, target_logger):
+        if not any(isinstance(h, self.__class__) for h in target_logger.handlers):
+            target_logger.addHandler(self)
+
+    @classmethod
+    def uninstall_from(cls, target_logger):
+        for h in list(target_logger.handlers):
+            if isinstance(h, JobLogRedisHandler):
+                target_logger.removeHandler(h)
+
 
 def setup_logger_redirection(task_request):
     redis_handler = JobLogRedisHandler(task_request)
-    task = get_logger("celery.task")
-    redirected = get_logger("celery.redirected")
-    if not any(isinstance(h, JobLogRedisHandler) for h in task.handlers):
-        task.addHandler(redis_handler)
-    if not any(isinstance(h, JobLogRedisHandler) for h in redirected.handlers):
-        redirected.addHandler(redis_handler)
+    redis_handler.install_in(get_logger("celery.task"))
+    redis_handler.install_in(get_logger("celery.redirected"))
 
 
 def clean_logger_redirection():
-    task = get_logger("celery.task")
-    redirected = get_logger("celery.redirected")
-    for h in list(task.handlers):
-        if isinstance(h, JobLogRedisHandler):
-            task.removeHandler(h)
-    for h in list(redirected.handlers):
-        if isinstance(h, JobLogRedisHandler):
-            redirected.removeHandler(h)
+    JobLogRedisHandler.uninstall_from(get_logger("celery.task"))
+    JobLogRedisHandler.uninstall_from(get_logger("celery.redirected"))
 
 
 class JobTask(Task):

@@ -23,7 +23,8 @@ def questions_added():
 
 def minutes_total():
     duration_sum = Video.objects.aggregate(Sum("duration"))["duration__sum"]
-    return int(duration_sum.total_seconds()) // 60
+    if duration_sum:
+        return int(duration_sum.total_seconds()) // 60
 
 
 def minutes_added():

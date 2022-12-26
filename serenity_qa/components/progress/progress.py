@@ -1,6 +1,6 @@
 from django_components import component
 
-from serenity_qa.apps.questions.models import ProgressReport
+from serenity_qa.questions.models import ProgressReport
 
 
 @component.register("progress")

@@ -6,8 +6,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from .apps.questions import views as questions_views
-from .apps.cms import views as cms_views
+from .questions import views as questions_views
+from serenity_qa.cms import views as cms_views
 from .components.question_list import views as question_list_views
 
 urlpatterns = [

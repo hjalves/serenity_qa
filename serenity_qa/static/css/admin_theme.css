@@ -66,13 +66,13 @@ html[data-theme="dark"] {
     --header-bg: var(--secondary);
     --header-link-color: var(--primary-fg);
 
-    --breadcrumbs-fg: #c4dce8;
+    --breadcrumbs-fg: #e8c4c4;
     --breadcrumbs-link-fg: #e0e0e0;
     --breadcrumbs-bg: var(--primary);
 
-    --link-fg: #81d4fa;
-    --link-hover-color: #4ac1f7;
-    --link-selected-fg: #6f94c6;
+    --link-fg: #ffc;
+    --link-hover-color: #f7874a;
+    --link-selected-fg: #c6796f;
 
     --hairline-color: #272727;
     --border-color: #353535;
@@ -85,7 +85,7 @@ html[data-theme="dark"] {
 
     --darkened-bg: #212121;
     --selected-bg: #1b1b1b;
-    --selected-row: #0b2b2c;
+    --selected-row: #583305;
 
     --button-fg: #fff;
     --button-bg: var(--primary);

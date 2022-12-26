@@ -241,6 +241,9 @@ class LiveChatMessageAdmin(admin.ModelAdmin):
 
     _published.admin_order_field = "video__published"
 
+    def has_add_permission(self, request):
+        return False
+
 
 @admin.register(YoutubePost)
 class YoutubePostAdmin(admin.ModelAdmin):
@@ -291,6 +294,7 @@ class ProgressReportAdmin(admin.ModelAdmin):
         "percentage_added",
         "questions_remaining",
     )
+    readonly_fields = ('created_on', 'indicators', )
 
     def percentage_added(self, obj):
         return obj.indicators.get('percentage_added')
@@ -303,3 +307,6 @@ class ProgressReportAdmin(admin.ModelAdmin):
 
     def questions_remaining(self, obj):
         return obj.indicators.get("questions_remaining")
+
+    def has_add_permission(self, request):
+        return False

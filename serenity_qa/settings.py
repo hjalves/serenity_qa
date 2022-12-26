@@ -101,9 +101,12 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "database" / "db.sqlite3",
-        "OPTIONS": {"timeout": 1000},
     }
 }
+
+SQLITE_TIMEOUT = os.environ.get("SQLITE_TIMEOUT")
+if SQLITE_TIMEOUT:
+    DATABASES["default"]["OPTIONS"] = {"timeout": int(SQLITE_TIMEOUT)}
 
 # Redis and caching
 

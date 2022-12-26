@@ -24,7 +24,7 @@ ALLOWED_HOSTS = ["*"]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-CSRF_TRUSTED_ORIGINS = ['https://*.serenityos.dev']
+CSRF_TRUSTED_ORIGINS = ["https://*.serenityos.dev"]
 
 # Application definition
 
@@ -101,6 +101,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "database" / "db.sqlite3",
+        "OPTIONS": {"timeout": 1000},
     }
 }
 

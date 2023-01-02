@@ -99,7 +99,7 @@ WSGI_APPLICATION = "serenity_qa.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": "serenity_qa.common.sqlite_engine",
         "NAME": BASE_DIR / "database" / "db.sqlite3",
     }
 }

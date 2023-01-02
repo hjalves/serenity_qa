@@ -68,7 +68,7 @@ class Video(models.Model):
     @property
     def embed_youtube_url(self):
         if self.code:
-            return f"http://www.youtube.com/embed/{self.code}?enablejsapi=1"
+            return f"https://www.youtube.com/embed/{self.code}?enablejsapi=1"
         return ""
 
     def existing_media_files(self):

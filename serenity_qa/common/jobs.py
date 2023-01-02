@@ -77,7 +77,6 @@ class JobTask(Task):
             state=celery.states.PENDING,
             description=description or "",
         )
-        extra['job_id'] = job.id
         result = super().apply_async(args, kwargs, task_id, **extra)
         result.job = job
         return result
@@ -88,25 +87,16 @@ class JobTask(Task):
         description = properties.get("description")
         if self.request.get("task"):
             # Only when in celery worker (task execution context)
-            # I can't use update_or_create. Otherwise, I get locking errors
-            # in sqlite3, for some reason.
-            job_qs = Job.objects.filter(task_id=self.request.id)
-            job_qs.update(
-                state=celery.states.STARTED,
-                started_at=timezone.now(),
-                task_name=self.request.task,
-                description=description or self.description or ""
+            job, _ = Job.objects.update_or_create(
+                task_id=self.request.id,
+                defaults={
+                    "state": celery.states.STARTED,
+                    "started_at": timezone.now(),
+                    "task_name": self.request.task,
+                    "description": description or self.description or "",
+                },
             )
-            # job, _ = Job.objects.update_or_create(
-            #     task_id=self.request.id,
-            #     defaults={
-            #         "state": celery.states.STARTED,
-            #         "started_at": timezone.now(),
-            #         "task_name": self.request.task,
-            #         "description": description or self.description or "",
-            #     },
-            # )
-            self.request.job = job_qs.first()
+            self.request.job = job
         return super(JobTask, self).__call__(*args, **kwargs)
 
     def after_return(self, status, retval, task_id, args, kwargs, einfo):

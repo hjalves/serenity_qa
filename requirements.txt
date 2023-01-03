@@ -38,7 +38,7 @@ click-repl==0.2.0
     # via celery
 colorlog==6.7.0
     # via -r requirements.in
-django==4.1.4
+django==4.1.5
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -131,7 +131,7 @@ wheel==0.38.4
     # via pip-tools
 whitenoise==6.2.0
     # via -r requirements.in
-yt-dlp==2022.11.11
+yt-dlp==2023.1.2
     # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:

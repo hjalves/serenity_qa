@@ -1,4 +1,4 @@
-Django~=4.1.4
+Django~=4.1.5
 celery>=5.2.7
 colorlog>=6.7.0
 django-better-admin-arrayfield>=1.4.2

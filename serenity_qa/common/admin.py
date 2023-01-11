@@ -10,14 +10,14 @@ from .admin_realtime import ModelAdminRealtime, autoupdate
 from .decorators import action_view
 from .forms import DumpDataForm
 from .models import Job, JobAttachment
-from .utils import get_job_log, humansize
+from .utils import humansize
 
 
 class JobAttachmentInline(admin.TabularInline):
     model = JobAttachment
     extra = 0
     max_num = 0
-    fields = readonly_fields = ("link", "type", "size")
+    fields = readonly_fields = ("link", "type", "size", "category")
 
     def has_add_permission(self, request, obj):
         return False
@@ -99,18 +99,7 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
 
     @autoupdate(polling=2000, condition=lambda obj: obj.state not in Job.READY_STATES)
     def elapsed(self, obj):
-        if obj.started_at is None:
-            return "-"
-        if not obj.finished_at and obj.realtime_state() == "PENDING":
-            return "-"
-        to_time = obj.finished_at or timezone.now()
-        td = to_time - obj.started_at
-        secs = td.total_seconds()
-        mins, secs = divmod(secs, 60)
-        hours, mins = divmod(mins, 60)
-        if hours > 0:
-            return "%02d:%02d:%02d" % (hours, mins, secs)
-        return "%02d:%02d" % (mins, secs)
+        return obj.elapsed_str() or "-"
 
     @autoupdate(polling=2000, condition=lambda obj: obj.state not in Job.READY_STATES)
     def result_progress(self, obj):
@@ -150,7 +139,8 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
             dt = dt.isoformat(" ", timespec="milliseconds")
             return f"{dt} [{levelname}] {message}"
 
-        job_log = get_job_log(obj.task_id)
+        # job_log = get_job_log(obj.task_id)
+        job_log = obj.job_log()
         output = "\n".join(log_format(e) for e in job_log)
         return format_html("<pre><code>{}</code></pre>", output)
 

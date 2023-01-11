@@ -1,3 +1,4 @@
+import json
 from os.path import basename
 
 from celery.result import AsyncResult
@@ -23,7 +24,7 @@ class Job(models.Model):
     ]
     READY_STATES = ("SUCCESS", "FAILURE", "REVOKED")
 
-    task_id = models.UUIDField()
+    task_id = models.CharField(max_length=32)
     task_name = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=500, blank=True)
     state = models.CharField(max_length=100, choices=STATE_CHOICES)
@@ -77,13 +78,49 @@ class Job(models.Model):
     def admin_link(self):
         return get_object_admin_link(self)
 
-    def attach(self, django_file, content_type=None, description=None):
+    def attach(self, django_file, content_type=None, description=None, category=None):
         if not content_type:
             content_type = discover_type(django_file)
         description = description or ""
+        category = category or JobAttachment.CATEGORY_FILE
         return JobAttachment.objects.create(
-            job=self, file=django_file, type=content_type, description=description
+            job=self,
+            file=django_file,
+            type=content_type,
+            description=description,
+            category=category,
         )
+
+    def elapsed(self):
+        if self.started_at is None:
+            return None
+        if not self.finished_at and self.realtime_state() == "PENDING":
+            return None
+        to_time = self.finished_at or timezone.now()
+        td = to_time - self.started_at
+        secs = td.total_seconds()
+        mins, secs = divmod(secs, 60)
+        hours, mins = divmod(mins, 60)
+        return hours, mins, secs
+
+    def elapsed_str(self):
+        if elapsed := self.elapsed():
+            hours, mins, secs = elapsed
+            if hours > 0:
+                return "%02d:%02d:%02d" % (hours, mins, secs)
+            return "%02d:%02d" % (mins, secs)
+
+    def job_log_redis_handler(self):
+        from serenity_qa.common.jobs import JobLogRedisHandler
+
+        return JobLogRedisHandler(task_id=self.task_id)
+
+    def job_log(self):
+        log = self.attachments.filter(category=JobAttachment.CATEGORY_LOG).first()
+        if log:
+            with log.file.open('rt') as f:
+                return [json.loads(line) for line in f]
+        return self.job_log_redis_handler().get_job_log()
 
 
 def attachment_path(instance, filename):
@@ -94,9 +131,19 @@ def attachment_path(instance, filename):
 
 
 class JobAttachment(models.Model):
+    CATEGORY_FILE = "file"
+    CATEGORY_LOG = "log"
+    CATEGORY_CHOICES = (
+        (CATEGORY_FILE, "File"),
+        (CATEGORY_LOG, "Log output"),
+    )
+
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(max_length=500, upload_to=attachment_path)
     type = models.CharField(max_length=100, blank=True)
+    category = models.CharField(
+        max_length=50, choices=CATEGORY_CHOICES, default=CATEGORY_FILE
+    )
     description = models.CharField(max_length=200, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 

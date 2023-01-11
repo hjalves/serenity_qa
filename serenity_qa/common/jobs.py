@@ -1,4 +1,6 @@
+import json
 import logging
+from tempfile import TemporaryFile
 
 import celery.states
 from celery.app.task import Task
@@ -10,7 +12,7 @@ from django.utils import timezone
 from kombu.utils import uuid
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
-from .models import Job
+from .models import Job, JobAttachment
 
 logger = get_task_logger(__name__)
 
@@ -22,44 +24,73 @@ def get_job_redis_connection():
 class JobLogRedisHandler(logging.Handler):
     STREAM_EXPIRE_TIME = 3600
 
+    @classmethod
+    def setup_logger_redirection(cls, task_request):
+        redis_handler = cls(task_request.id)
+        redis_handler.install_in(get_logger("celery.task"))
+        redis_handler.install_in(get_logger("celery.redirected"))
+        return redis_handler
+
+    @classmethod
+    def uninstall_cls_from(cls, target_logger):
+        for h in list(target_logger.handlers):
+            if isinstance(h, cls):
+                target_logger.removeHandler(h)
+
+    @classmethod
+    def clean_logger_redirection(cls):
+        cls.uninstall_cls_from(get_logger("celery.task"))
+        cls.uninstall_cls_from(get_logger("celery.redirected"))
+
     def __init__(
         self,
-        task_request,
+        task_id,
         redis_client=None,
         level=logging.NOTSET,
     ):
         super(JobLogRedisHandler, self).__init__(level)
-        self.task_id = task_request.id
-        self.task_name = task_request.get("task")
-        self.redis_stream = f"job:{self.task_id}"
+        # self.task_id = task_request.id
+        self.task_id = task_id
+        # self.task_name = task_request.get("task")
+        self.stream_name = f"job:{self.task_id}"
         self.redis_client = redis_client or get_job_redis_connection()
         self.formatter = JsonFormatter(reserved_attrs=())
+        self.installed_in = []
 
     def emit(self, record):
         msg = self.format(record)
-        self.redis_client.xadd(self.redis_stream, {"message": msg})
-        self.redis_client.expire(self.redis_stream, self.STREAM_EXPIRE_TIME)
+        self.redis_client.xadd(self.stream_name, {"message": msg})
+        self.redis_client.expire(self.stream_name, self.STREAM_EXPIRE_TIME)
+
+    def delete_stream(self):
+        self.redis_client.delete(self.stream_name)
 
     def install_in(self, target_logger):
         if not any(isinstance(h, self.__class__) for h in target_logger.handlers):
             target_logger.addHandler(self)
+            self.installed_in.append(target_logger)
 
-    @classmethod
-    def uninstall_from(cls, target_logger):
-        for h in list(target_logger.handlers):
-            if isinstance(h, JobLogRedisHandler):
-                target_logger.removeHandler(h)
+    def uninstall(self):
+        for target_logger in self.installed_in:
+            target_logger.removeHandler(self)
+        self.installed_in = []
 
+    def get_job_log(self):
+        entries = self.redis_client.xrange(f"job:{self.task_id}")
+        messages = []
+        for timestamp, content in entries:
+            messages.append(json.loads(content[b"message"]))
+        return messages
 
-def setup_logger_redirection(task_request):
-    redis_handler = JobLogRedisHandler(task_request)
-    redis_handler.install_in(get_logger("celery.task"))
-    redis_handler.install_in(get_logger("celery.redirected"))
-
-
-def clean_logger_redirection():
-    JobLogRedisHandler.uninstall_from(get_logger("celery.task"))
-    JobLogRedisHandler.uninstall_from(get_logger("celery.redirected"))
+    def save_to_file(self, stream, iter_size=100):
+        start = "-"
+        client = self.redis_client
+        while entries := client.xrange(self.stream_name, min=start, count=iter_size):
+            timestamp = None
+            for timestamp, content in entries:
+                stream.write(content[b"message"].decode())
+                stream.write("\n")
+            start = f"({timestamp.decode()}" if timestamp else "-"
 
 
 class JobTask(Task):
@@ -82,7 +113,7 @@ class JobTask(Task):
         return result
 
     def __call__(self, *args, **kwargs):
-        setup_logger_redirection(task_request=self.request)
+        self.log_handler = JobLogRedisHandler.setup_logger_redirection(self.request)
         properties = self.request.get("properties") or {}
         description = properties.get("description")
         if self.request.get("task"):
@@ -100,7 +131,18 @@ class JobTask(Task):
         return super(JobTask, self).__call__(*args, **kwargs)
 
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
-        clean_logger_redirection()
+        self.log_handler.uninstall()
+        with TemporaryFile("w+t") as temp_file:
+            self.log_handler.save_to_file(temp_file)
+            temp_file.seek(0)
+            self.attach_file(
+                temp_file,
+                name=f"joblog-{self.job.id}.jsonl",
+                content_type="application/jsonlines",
+                description="Job log output",
+                category=JobAttachment.CATEGORY_LOG,
+            )
+        self.log_handler.delete_stream()
 
     def on_success(self, retval, task_id, args, kwargs):
         job = self.request.job
@@ -108,6 +150,7 @@ class JobTask(Task):
         job.finished_at = timezone.now()
         job.save()
         job.refresh_admin_page()
+        logger.info(f"Job '{job}' completed successfully in {job.elapsed_str()}.")
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         try:
@@ -148,10 +191,14 @@ class JobTask(Task):
         meta["message"] = message
         self.update_state(state="PROGRESS", meta=meta)
 
-    def attach_file(self, file, name=None, content_type=None, description=None):
+    def attach_file(
+        self, file, name=None, content_type=None, description=None, category=None
+    ):
         django_file = File(file, name)
-        return self.request.job.attach(django_file, content_type, description)
+        return self.request.job.attach(django_file, content_type, description, category)
 
-    def attach_content(self, content, name, content_type=None, description=None):
+    def attach_content(
+        self, content, name, content_type=None, description=None, category=None
+    ):
         django_file = ContentFile(content, name)
-        return self.request.job.attach(django_file, content_type, description)
+        return self.request.job.attach(django_file, content_type, description, category)

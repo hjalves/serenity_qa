@@ -1,7 +1,5 @@
-import json
 from traceback import format_exception_only
 
-import magic
 from django.urls import NoReverseMatch, reverse
 
 suffixes = ["B", "KB", "MB", "GB", "TB", "PB"]
@@ -17,11 +15,15 @@ def humansize(nbytes):
 
 
 def discover_type(file):
-    file.seek(0)
-    # "HOWMANY" constant in libmagic (bytes needed to find type): 65536
-    mimetype = magic.from_buffer(file.read(65536), mime=True)
-    file.seek(0)
-    return mimetype
+    try:
+        import magic
+        file.seek(0)
+        # "HOWMANY" constant in libmagic (bytes needed to find type): 65536
+        mimetype = magic.from_buffer(file.read(65536), mime=True)
+        file.seek(0)
+        return mimetype
+    except ImportError:
+        return None
 
 
 def format_exception(ex):

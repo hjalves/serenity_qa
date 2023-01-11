@@ -137,7 +137,7 @@ class JobTask(Task):
             temp_file.seek(0)
             self.attach_file(
                 temp_file,
-                name=f"joblog-{self.job.id}.jsonl",
+                name=f"joblog-{self.request.job.id}.jsonl",
                 content_type="application/jsonlines",
                 description="Job log output",
                 category=JobAttachment.CATEGORY_LOG,

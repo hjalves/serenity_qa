@@ -8,7 +8,7 @@ from serenity_qa.questions.models import Video
 
 
 class QuestionListView(TemplateView):
-    template_name = "question_list/question_list.html"
+    template_name = "question_list/partials/question_list.html"
 
     def get_context_data(self, **kwargs):
         video = get_object_or_404(Video, id=kwargs["video"])

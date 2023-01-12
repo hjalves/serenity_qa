@@ -22,8 +22,7 @@
     <div class="form-row">
       <form hx-post="{% url 'question-list' video.id %}"
             hx-target="#video-questions"
-            hx-vals='js:{timestamp: secondsToDuration(getCurrentTime())}'
-            hx-swap="outerHTML">
+            hx-vals='js:{timestamp: secondsToDuration(getCurrentTime())}'>
         {% csrf_token %}
         <input class="submit-question" type="submit" value="Add at current timestamp">
       </form>

@@ -1,22 +1,4 @@
 {% load static %}
 <div id="{{ id }}" class="question-list">
-  <table id="video-questions-table" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-    <thead>
-    <tr>
-      <th scope="col" class="shrink"></th>
-      <th scope="col" class="shrink">Timestamp</th>
-      <th scope="col" class="expand">Question</th>
-      <th scope="col" class="shrink"></th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for question in video.questions %}
-      {% if question == editing_question %}
-        {% include "question_list/partials/question_detail.html" with edit=True %}
-      {% else %}
-        {% include "question_list/partials/question_detail.html" %}
-      {% endif %}
-    {% endfor %}
-    </tbody>
-  </table>
+{% include "question_list/partials/question_list.html" %}
 </div>

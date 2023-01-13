@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import HttpResponse
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404
@@ -39,6 +41,17 @@ class QuestionDetailView(TemplateView):
         if "edit" in self.request.GET:
             context["edit"] = True
         return context
+
+    def post(self, request, *args, **kwargs):
+        data = QueryDict(request.body)
+        video = get_object_or_404(Video, id=kwargs["video"])
+        question = get_object_or_404(video.question_set, id=kwargs["question"])
+        if "inc" in self.request.GET:
+            question.timestamp += datetime.timedelta(seconds=1)
+        elif "dec" in self.request.GET:
+            question.timestamp -= datetime.timedelta(seconds=1)
+        question.save()
+        return self.get(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
         data = QueryDict(request.body)

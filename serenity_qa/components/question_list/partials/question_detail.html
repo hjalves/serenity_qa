@@ -9,6 +9,17 @@
       data-timestamp="{{ question.timestamp }}"
       data-timestamp-sec="{{ question.timestamp.total_seconds }}"
   >{{ question.timestamp }}</a>
+    <div class="timestamp-buttons">
+      <a href="javascript:"
+         hx-post="{% url 'question-list-detail' video.id question.id %}?inc"
+         hx-target="closest tr"
+         hx-swap="outerHTML">&#x2795</a>
+      <a href="javascript:"
+         hx-post="{% url 'question-list-detail' video.id question.id %}?dec"
+         hx-target="closest tr"
+         hx-swap="outerHTML">&#x2796</a>
+    </div>
+
   </th>
   <td class="expand">
     {% if edit %}
@@ -19,7 +30,11 @@
         <div class="edit-question">
           <input id="id_edit_question" type="text" name="question"
                  value="{{ question.question }}">
-          <input type="submit" value="✓">
+          <input type="submit" value="✔">
+          <input type="button" value="✘"
+                 hx-get="{% url 'question-list-detail' video.id question.id %}"
+                 hx-target="closest tr"
+                 hx-swap="outerHTML">
         </div>
       </form>
     {% else %}
@@ -32,10 +47,12 @@
     {% endif %}
   </td>
   <td>
+    {% if not edit %}
     <a href="{{ question.admin_delete_url }}" class="deletelink"
        hx-delete="{% url 'question-list-detail' video.id question.id %}"
        hx-target="closest tr"
        hx-confirm="Delete this question?"
        hx-swap="delete swap:0.5s"></a>
+    {% endif %}
   </td>
 </tr>

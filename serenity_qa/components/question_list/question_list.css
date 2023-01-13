@@ -14,17 +14,22 @@ table#video-questions-table td, th {
     vertical-align: middle;
 }
 
-table#video-questions-table div.edit-question {
+table#video-questions-table .edit-question {
     display: flex;
 }
 
-table#video-questions-table div.edit-question input[type=text] {
+table#video-questions-table .edit-question input[type=text] {
     flex-grow: 1;
 }
 
-table#video-questions-table div.edit-question input[type=submit] {
+table#video-questions-table .edit-question input[type=submit],
+table#video-questions-table .edit-question input[type=button] {
     padding: 5px 10px;
     margin-left: 5px;
+}
+
+table#video-questions-table .timestamp-buttons {
+    display: inline-block;
 }
 
 tr.htmx-swapping td, tr.htmx-swapping th {

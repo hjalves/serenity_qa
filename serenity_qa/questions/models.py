@@ -391,7 +391,10 @@ class YoutubePost(models.Model):
         return cls.objects.update_or_create(entry_id=entry.id, defaults=defaults)
 
     def get_or_create_video(self):
-        video, created = Video.objects.get_or_create(code=self.yt_videoid)
+        video, created = Video.objects.get_or_create(
+            code=self.yt_videoid,
+            defaults={"title": self.title, "published": self.published.date()},
+        )
         if not created:
             logger.info("YouTube Post already exist as a Q&A video, ID=%s", video.id)
         return video, created

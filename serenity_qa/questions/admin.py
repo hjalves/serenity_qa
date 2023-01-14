@@ -46,7 +46,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "media_files",
     )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
-    change_actions = ("transcribe_questions", "dumpdata")
+    change_actions = ("timestamp_questions", "dumpdata")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -120,10 +120,10 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     import_metadata.short_description = "Import metadata"
 
     @action_view(
-        label="Transcription",
-        description="Open a Youtube player and transcribe questions",
+        label="Timestamp questions",
+        description="Open a Youtube player and transcribe/timestamp questions",
     )
-    def transcribe_questions(self, request, obj):
+    def timestamp_questions(self, request, obj):
         return {
             "video": obj,
         }

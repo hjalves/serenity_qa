@@ -2,13 +2,13 @@
 {% load admin_urls static component_tags %}
 
 {% block extrastyle %}{{ block.super }}
-  <link rel="stylesheet" href="{% static "css/transcribe_questions.css" %}">
+  <link rel="stylesheet" href="{% static "css/timestamp_questions.css" %}">
   {% component_css_dependencies %}
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
-  <script src="{% static 'js/transcribe_questions.js' %}" defer></script>
+  <script src="{% static 'js/timestamp_questions.js' %}" defer></script>
   <script src="https://www.youtube.com/iframe_api" defer></script>
 {% endblock %}
 

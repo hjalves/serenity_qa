@@ -155,7 +155,8 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
+    list_display = ("__str__", "name", "slug", "emoji", "color", "quiet", )
+    list_editable = ("name", "slug", "emoji", "quiet", "color")
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ("emoji_preview",)
 

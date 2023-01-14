@@ -1,5 +1,5 @@
 {% load questions_extras %}
-<article id="{{ id }}" class="question">
+<article id="{{ id }}" class="question{% if question.quiet %} quiet{% endif %}">
   <div class="question-header">
     <a class="title" href="#{{ id }}">{{ question.video.title }}</a>
     <a class="duration" title="Duration"
@@ -17,8 +17,8 @@
   <div class="question-footer">
     <div class="tags">
       {% for tag in question.tags.all %}
-        <a class="tag">{{ tag.name }}</a>{% endfor %}
+        <a class="tag tag-{{ tag.slug }}">{% if tag.emoji %}<span class="emoji">{{ tag.emoji }}</span>{% endif %}{{ tag.name }}</a>{% endfor %}
     </div>
-    <div class="clear"></div>
+    <div class="clear"/>
   </div>
 </article>

@@ -14,7 +14,7 @@ billiard==3.6.4.0
     # via celery
 brotli==1.0.9
     # via yt-dlp
-build==0.9.0
+build==0.10.0
     # via pip-tools
 celery==5.2.7
     # via
@@ -50,7 +50,9 @@ django-better-admin-arrayfield==1.4.2
     # via -r requirements.in
 django-celery-beat==2.4.0
     # via -r requirements.in
-django-components==0.23
+django-colorfield==0.8.0
+    # via -r requirements.in
+django-components==0.24
     # via -r requirements.in
 django-extensions==3.2.1
     # via -r requirements.in
@@ -62,6 +64,8 @@ django-render-block==0.9.2
     # via -r requirements.in
 django-timezone-field==5.0
     # via django-celery-beat
+emoji==2.2.0
+    # via -r requirements.in
 feedparser==6.0.10
     # via -r requirements.in
 ffmpeg==1.4
@@ -76,16 +80,18 @@ markdown==3.4.1
     # via -r requirements.in
 mutagen==1.46.0
     # via yt-dlp
-packaging==22.0
+packaging==23.0
     # via build
-pep517==0.13.0
-    # via build
+pillow==9.4.0
+    # via django-colorfield
 pip-tools==6.12.1
     # via -r requirements.in
 prompt-toolkit==3.0.36
     # via click-repl
 pycryptodomex==3.16.0
     # via yt-dlp
+pyproject-hooks==1.0.0
+    # via build
 python-crontab==2.7.1
     # via django-celery-beat
 python-dateutil==2.8.2
@@ -100,7 +106,7 @@ pytz==2022.7
     #   django-timezone-field
 pyyaml==6.0
     # via -r requirements.in
-redis==4.4.0
+redis==4.4.2
     # via -r requirements.in
 sgmllib3k==1.0.0
     # via feedparser
@@ -113,7 +119,7 @@ sqlparse==0.4.3
 tomli==2.0.1
     # via
     #   build
-    #   pep517
+    #   pyproject-hooks
 tzdata==2022.7
     # via django-celery-beat
 uvicorn==0.20.0
@@ -131,7 +137,7 @@ wheel==0.38.4
     # via pip-tools
 whitenoise==6.2.0
     # via -r requirements.in
-yt-dlp==2023.1.2
+yt-dlp==2023.1.6
     # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:

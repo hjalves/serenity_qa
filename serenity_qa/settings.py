@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django_object_actions",
     "django_better_admin_arrayfield",
     "django_htmx",
+    "colorfield",
     # Project
     "serenity_qa.common",
     "serenity_qa.cms",

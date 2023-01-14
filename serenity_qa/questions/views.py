@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
-from .models import Video
+from .models import Video, Tag
 
 
 def home(request):
@@ -19,4 +19,14 @@ class VideoView(TemplateView):
         kw["videos"] = Video.objects.all()
         kw["questions"] = video.question_set.order_by("timestamp")
         kw["video"] = kw["self"] = video
+        return kw
+
+
+class TagsCSSView(TemplateView):
+    template_name = "questions/tags.css"
+    content_type = "text/css"
+
+    def get_context_data(self, **kwargs):
+        kw = super().get_context_data(**kwargs)
+        kw["tags"] = Tag.objects.all()
         return kw

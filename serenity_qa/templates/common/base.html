@@ -8,6 +8,7 @@
   <link rel="shortcut icon" type="image/png" href="{% static 'icon/ladyball.png' %}" />
   <link href="{% static 'css/style.css' %}" media="all" rel="stylesheet">
   {% block extrastyle %}{% component_css_dependencies %}{% endblock %}
+  <link href="{% url 'tagcss' %}" media="all" rel="stylesheet">
 </head>
 <body>
 <aside>

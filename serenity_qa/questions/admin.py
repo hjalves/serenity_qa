@@ -157,6 +157,10 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}
+    readonly_fields = ("emoji_preview",)
+
+    def emoji_preview(self, obj):
+        return format_html('<span class="emoji-preview">{}</span>', obj.emoji)
 
 
 class QuestionForm(forms.ModelForm):

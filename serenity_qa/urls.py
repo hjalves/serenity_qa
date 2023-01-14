@@ -12,7 +12,8 @@ from .components.question_list import views as question_list_views
 
 urlpatterns = [
     path("", cms_views.PageView.as_view(), name="index"),
-    path("video/<int:video>/", questions_views.VideoView.as_view(), name="video"),
+    path("tags.css", questions_views.TagsCSSView.as_view(), name="tagcss"),
+    path("videos/<int:video>/", questions_views.VideoView.as_view(), name="video"),
     path(
         "admin/htmx/video/<int:video>/questions/",
         question_list_views.QuestionListView.as_view(),

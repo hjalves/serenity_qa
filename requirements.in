@@ -3,6 +3,7 @@ celery>=5.2.7
 colorlog>=6.7.0
 django-better-admin-arrayfield>=1.4.2
 django-celery-beat>=2.4.0
+django-colorfield>=0.8.0
 django-components>=0.23
 django-extensions>=3.2.1
 django-htmx>=1.13.0
@@ -20,3 +21,4 @@ redis>=4.4.0
 uvicorn>=0.20.0
 whitenoise==6.2.0
 yt-dlp>=2022.11.11
+emoji>=2.2.0

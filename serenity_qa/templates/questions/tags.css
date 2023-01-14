@@ -1,0 +1,7 @@
+{% for tag in tags %}.tag-{{ tag.slug }} {
+    background: {{ tag.translucent_color | default:"#80808080" }};
+}
+.tag-{{ tag.slug }}:hover {
+    background: {{ tag.full_color | default:"#808080FF" }};
+}
+{% endfor %}

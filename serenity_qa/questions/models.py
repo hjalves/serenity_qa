@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.files import File
 from django.db import models
 from django.urls import reverse
+from colorfield.fields import ColorField
 
 from .livechat import parse_jsonl_live_chat
 from .utils import trim_audio_file
@@ -180,6 +181,11 @@ class Tag(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField()
     description = models.TextField(blank=True)
+    quiet = models.BooleanField(
+        default=False, help_text="Put these questions in background"
+    )
+    color = ColorField(format="hex", blank=True, default="")
+    emoji = models.CharField(max_length=4, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -190,6 +196,14 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+    def full_color(self):
+        if self.color:
+            return f"{self.color}FF"
+
+    def translucent_color(self):
+        if self.color:
+            return f"{self.color}80"
 
 
 def question_audiofile_path(instance, filename):
@@ -301,6 +315,9 @@ class Question(models.Model):
         with path.open(mode="rb") as f:
             self.audio_file = File(f, name=path.name)
             self.save()
+
+    def quiet(self):
+        return self.tags.filter(quiet=True).exists()
 
 
 class QuestionAudio(models.Model):

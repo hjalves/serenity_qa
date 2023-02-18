@@ -24,7 +24,9 @@
             hx-target="#video-questions"
             hx-vals='js:{timestamp: secondsToDuration(getCurrentTime())}'>
         {% csrf_token %}
-        <input class="submit-question" type="submit" value="Add at current timestamp">
+        <input id="submit-button" class="submit-question" type="submit" value="Add at current timestamp">
+        <input type="checkbox" id="pause-checkbox" name="pause-checkbox">
+      <label for="pause-checkbox">Auto-add when pausing</label>
       </form>
     </div>
   </div>

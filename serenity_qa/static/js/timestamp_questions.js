@@ -44,6 +44,10 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
+    if (event.data === 2) {
+        if (document.getElementById('pause-checkbox').checked)
+            document.getElementById('submit-button').click();
+    }
     updateLiveStreamChat();
 }
 

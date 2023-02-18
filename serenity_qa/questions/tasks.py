@@ -118,8 +118,8 @@ def video_dump_data(self, video_id, models, format, **extra):
     return result
 
 
-@shared_task(bind=True, base=JobTask, description="Update YouTube feed")
-def update_feed(self):
+@shared_task()
+def update_feed():
     parsed = feedparser.parse(settings.YOUTUBE_RSS)
     new_entries = 0
     for entry in parsed.entries:
@@ -139,7 +139,6 @@ def update_feed(self):
                     logger.info("Q&A video created with code=%s", video.code)
     result = "{} new entries".format(new_entries if new_entries > 0 else "no")
     logger.info(result)
-    self.set_description(f"{self.description}: {result}")
     return result
 
 

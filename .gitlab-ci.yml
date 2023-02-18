@@ -3,6 +3,7 @@ variables:
 
 stages:
   - build
+  - deploy
 
 build image:
   stage: build
@@ -16,5 +17,19 @@ build image:
     - docker build --file Dockerfile
       --cache-from $IMAGE_NAME --tag $IMAGE_NAME .
     - docker push $IMAGE_NAME
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - 'curl -sfD- --user $DEPLOY_AUTH "$DEPLOY_URL?$DEPLOY_ARGS" | tee /tmp/output'
+    - 'grep -i "X-Shell2http-Exit-Code: 0" /tmp/output'
+  environment:
+    name: Production
+    url: https://qa.serenityos.dev
   only:
     - main

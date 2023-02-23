@@ -16,8 +16,9 @@
 
 {% block content %}
   <div id="content-main">
-    <iframe id="player" src="{{ video.embed_youtube_url }}"
-            width="700" height="400" allowfullscreen></iframe>
+    <div class="player-wrapper">
+      <iframe id="player" src="{{ video.embed_youtube_url }}" allowfullscreen></iframe>
+    </div>
     <h2>Questions</h2>
     <div class="form-row">
       <form hx-post="{% url 'question-list' video.id %}"

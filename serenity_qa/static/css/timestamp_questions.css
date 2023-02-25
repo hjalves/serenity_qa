@@ -59,13 +59,14 @@ ul.actionlist li {
     #content-related {
         position: relative;
         margin-bottom: 20px;
+        top: 0;
     }
 
     #livechat-module {
-        max-height: 400px;
+        max-height: 200px;
     }
 
     #video-questions {
-        margin-top: 40px;
+        margin-top: 20px;
     }
 }

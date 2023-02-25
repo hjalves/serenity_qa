@@ -143,18 +143,11 @@ html[data-theme="light"] .theme-toggle svg.theme-icon-when-light {
     display: block;
 }
 
-/* Serenity Emoji */
-@font-face {
-    font-family: "SerenityOS Emoji";
-    src: url("../fonts/SerenityOS-Emoji.ttf") format("truetype");
-}
-
 .emoji-preview {
-    font-family: "SerenityOS Emoji",sans-serif;
+    font-family: "SerenityOS Emoji", sans-serif;
     font-size: 64px;
     border: 2px solid var(--border-color);
     padding: 4px;
     text-align: center;
     background-color: var(--darkened-bg);
 }
-

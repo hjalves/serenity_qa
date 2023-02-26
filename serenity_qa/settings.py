@@ -18,7 +18,7 @@ BASE_DIR = PROJ_DIR.parent
 SECRET_KEY = "django-insecure-do5&0^5zt!@#%opi-ts_ngiuqno=-ank-*caz133@#uik@kmw-"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG"))
 
 ALLOWED_HOSTS = ["*"]
 

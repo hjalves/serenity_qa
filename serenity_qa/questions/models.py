@@ -177,9 +177,14 @@ class Video(models.Model):
         return created, updated
 
 
+class TagManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
     quiet = models.BooleanField(
         default=False, help_text="Put these questions in background"
@@ -189,6 +194,8 @@ class Tag(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
+    objects = TagManager()
+
     class Meta:
         verbose_name = "tag"
         verbose_name_plural = "tags"
@@ -196,6 +203,9 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+    def natural_key(self):
+        return self.slug,
 
     def full_color(self):
         if self.color:
@@ -227,6 +237,8 @@ class Question(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+
+    objects = QuestionManager()
 
     class Meta:
         verbose_name = "question"

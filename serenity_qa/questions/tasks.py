@@ -1,5 +1,8 @@
+import tarfile
+from functools import partial
+from pathlib import Path
 from statistics import StatisticsError
-from tempfile import TemporaryFile
+from tempfile import TemporaryFile, NamedTemporaryFile
 
 import feedparser
 from celery import shared_task
@@ -15,7 +18,7 @@ from serenity_qa.questions.dumpdata import (
     ProgressWrapper,
     get_objects_from_querysets,
 )
-from serenity_qa.questions.models import Video, YoutubePost, ProgressReport
+from serenity_qa.questions.models import Video, YoutubePost, ProgressReport, Tag
 from serenity_qa.questions.utils import serializer_format_to_mimetype
 
 logger = get_task_logger(__name__)
@@ -103,7 +106,7 @@ def video_dump_data(self, video_id, models, format, **extra):
             use_natural_foreign_keys=True,
             use_natural_primary_keys=True,
             stream=stream,
-            progress_output=ProgressWrapper(self),
+            progress_output=ProgressWrapper(self.log_progress),
             object_count=sum(get_objects(count_only=True)),
             **extra,
         )
@@ -175,3 +178,59 @@ def generate_progress_report():
         ProgressReport.objects.create(indicators=indicators)
     else:
         logger.info("The previous one is the same. Will not do anything.")
+
+
+@shared_task()
+def database_export(tar_path="database.tar.gz", data_format="json", extra=None):
+    serializer_extra = {}
+    if data_format == "json":
+        serializer_extra = {"indent": 2}
+    serializer_extra.update(extra or {})
+
+    tar_path = Path(tar_path)
+    valid_suffixes = [".tar"], [".tar", ".gz"], [".tar", ".bz2"], [".tar", ".xz"]
+    assert tar_path.suffixes in valid_suffixes
+    tar_mode = {
+        ".tar": "w",
+        ".gz": "w:gz",
+        ".bz2": "w:bz2",
+        ".xz": "w:xz",
+    }[tar_path.suffix]
+
+    assert data_format in ("json", "jsonl", "xml", "yaml")
+    file_mode = "w+t"
+    if data_format == "xml":
+        file_mode = "w+b"
+
+    def serialize_and_add_to_tar(tar_file, get_objects, file_name):
+        logger.info(f"Exporting {file_name}...")
+        with NamedTemporaryFile(mode=file_mode) as stream:
+            serializers.serialize(
+                data_format,
+                get_objects(),
+                use_natural_foreign_keys=True,
+                use_natural_primary_keys=True,
+                stream=stream,
+                object_count=sum(get_objects(count_only=True)),
+                **serializer_extra,
+            )
+            stream.flush()
+            tar_file.add(stream.name, file_name)
+
+    def get_video_objects(video_id, count_only=False):
+        queryset = Video.objects.all().filter(id=video_id)
+        obj = queryset.get()
+        return get_objects_from_querysets(
+            queryset, obj.question_set.all(), count_only=count_only
+        )
+
+    def get_tag_objects(count_only=False):
+        return get_objects_from_querysets(Tag.objects.all(), count_only=count_only)
+
+    with tarfile.open(tar_path, tar_mode) as tar:
+        for obj_id, published in Video.objects.values_list("id", "published"):
+            name = f"video-{published}.{data_format}"
+            serialize_and_add_to_tar(tar, partial(get_video_objects, obj_id), name)
+        serialize_and_add_to_tar(tar, get_tag_objects, f"tags.{data_format}")
+
+    logger.info(f"Database exported to tar file: {tar_path}")

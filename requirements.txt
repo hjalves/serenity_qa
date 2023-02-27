@@ -86,9 +86,9 @@ pillow==9.4.0
     # via django-colorfield
 pip-tools==6.12.2
     # via -r requirements.in
-prompt-toolkit==3.0.36
+prompt-toolkit==3.0.37
     # via click-repl
-pycryptodomex==3.16.0
+pycryptodomex==3.17
     # via yt-dlp
 pyproject-hooks==1.0.0
     # via build
@@ -96,11 +96,11 @@ python-crontab==2.7.1
     # via django-celery-beat
 python-dateutil==2.8.2
     # via python-crontab
-python-json-logger==2.0.4
+python-json-logger==2.0.7
     # via -r requirements.in
 python-magic==0.4.27
     # via -r requirements.in
-pytz==2022.7
+pytz==2022.7.1
     # via
     #   celery
     #   django-timezone-field
@@ -129,7 +129,7 @@ vine==5.0.0
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.2.5
+wcwidth==0.2.6
     # via prompt-toolkit
 websockets==10.4
     # via yt-dlp

@@ -84,9 +84,9 @@ packaging==23.0
     # via build
 pillow==9.4.0
     # via django-colorfield
-pip-tools==6.12.2
+pip-tools==6.12.3
     # via -r requirements.in
-prompt-toolkit==3.0.37
+prompt-toolkit==3.0.38
     # via click-repl
 pycryptodomex==3.17
     # via yt-dlp
@@ -122,7 +122,7 @@ tomli==2.0.1
     #   pyproject-hooks
 tzdata==2022.7
     # via django-celery-beat
-uvicorn==0.20.0
+uvicorn==0.21.0
     # via -r requirements.in
 vine==5.0.0
     # via
@@ -137,7 +137,7 @@ wheel==0.38.4
     # via pip-tools
 whitenoise==6.4.0
     # via -r requirements.in
-yt-dlp==2023.2.17
+yt-dlp==2023.3.4
     # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:

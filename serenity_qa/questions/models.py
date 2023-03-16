@@ -346,6 +346,9 @@ class Question(models.Model):
     def quiet(self):
         return self.tags.filter(quiet=True).exists()
 
+    @property
+    def emoji(self):
+        return '❔'
 
 class QuestionAudio(models.Model):
     question = models.OneToOneField(Question, on_delete=models.CASCADE)

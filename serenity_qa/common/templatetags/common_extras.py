@@ -1,5 +1,12 @@
+import datetime
+
 from django import template
+from django.core.cache import cache
+from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
+
+from serenity_qa.questions.utils import get_or_set_tag_colors_version
 
 register = template.Library()
 
@@ -19,11 +26,19 @@ def navbar(context):
         "query": context.get("query"),
     }
 
+
 @register.simple_tag(name="load_emoji_fonts", takes_context=True)
 def load_emoji_fonts(context):
-    request = context['request']
+    request = context["request"]
     ua = request.user_agent
     if "Safari" in ua.browser.family:
         return ""
     href = "https://linusg.github.io/serenityos-emoji-font/SerenityOS-Emoji.css"
     return mark_safe(f'<link href="{href}" rel="stylesheet">')
+
+
+@register.simple_tag(name="tag_colors_css")
+def tag_colors_css():
+    value = get_or_set_tag_colors_version()
+    css_href = reverse("tag-colors")
+    return mark_safe(f'<link href="{css_href}?{value}" rel="stylesheet">')

@@ -155,13 +155,16 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "name", "slug", "emoji", "color", "quiet", )
-    list_editable = ("name", "slug", "emoji", "quiet", "color")
+    list_display = ("name", "slug", "emoji", "serenity_emoji", "color", )
+    list_editable = ("color", )
     prepopulated_fields = {"slug": ("name",)}
-    readonly_fields = ("emoji_preview",)
+    readonly_fields = ("serenity_emoji_preview",)
 
-    def emoji_preview(self, obj):
-        return format_html('<span class="emoji-preview">{}</span>', obj.emoji)
+    def serenity_emoji(self, obj):
+        return format_html('<span class="serenity-emoji">{}</span>', obj.emoji)
+
+    def serenity_emoji_preview(self, obj):
+        return format_html('<span class="serenity-emoji-preview">{}</span>', obj.emoji)
 
 
 class QuestionForm(forms.ModelForm):

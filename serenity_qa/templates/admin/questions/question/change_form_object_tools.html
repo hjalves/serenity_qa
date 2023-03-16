@@ -1,0 +1,17 @@
+{% extends "admin/change_form_object_tools.html" %}
+{% load i18n admin_urls %}
+{% block object-tools-items %}
+{% if previous %}
+<li>
+    {% url opts|admin_urlname:'change' previous.pk|admin_urlquote as previous_url %}
+    <a href="{% add_preserved_filters previous_url %}" class="previouslink">{{ previous.timestamp }}</a>
+</li>
+{% endif %}
+{% if next %}
+<li>
+    {% url opts|admin_urlname:'change' next.pk|admin_urlquote as next_url %}
+    <a href="{% add_preserved_filters next_url %}" class="nextlink">{{ next.timestamp }}</a>
+</li>
+{% endif %}
+{{ block.super }}
+{% endblock %}

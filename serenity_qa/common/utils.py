@@ -55,4 +55,6 @@ def format_link(url, show_scheme=False):
     display_url = url
     if not show_scheme:
         _, _, display_url = url.partition("://")
-    return format_html("<a href='{url}'>{display}</a>", url=url, display=display_url)
+    return format_html(
+        "<a href='{url}'>{display}</a>", url=url, display=display_url or url
+    )

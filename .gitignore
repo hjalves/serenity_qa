@@ -132,7 +132,8 @@ dmypy.json
 .idea/
 
 # Misc
-gym/settings_local.py
 staticfiles/
 media/
-
+database/
+fixtures/
+*.tar.gz

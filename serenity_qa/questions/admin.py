@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpResponseRedirect
@@ -272,6 +273,22 @@ class QuestionAdmin(admin.ModelAdmin):
             obj.generate_audio()
 
     generate_audio.short_description = "Generate audio"
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        obj = self.get_object(request, object_id)
+        if obj:
+            try:
+                extra_context["previous"] = obj.get_previous()
+            except ObjectDoesNotExist:
+                extra_context["previous"] = None
+            try:
+                extra_context["next"] = obj.get_next()
+            except ObjectDoesNotExist:
+                extra_context["next"] = None
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
 
 
 @admin.register(LiveChatMessage)

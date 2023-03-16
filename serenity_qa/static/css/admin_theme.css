@@ -156,3 +156,17 @@ html[data-theme="light"] .theme-toggle svg.theme-icon-when-light {
     padding: 4px;
     text-align: center;
 }
+
+.object-tools a.previouslink {
+    background-repeat: no-repeat;
+    background-position: left 7px center;
+    padding-left: 26px;
+    background-image: url("/static/admin/img/tooltag-arrowleft.svg");
+}
+
+.object-tools a.nextlink {
+    background-repeat: no-repeat;
+    background-position: right 7px center;
+    padding-right: 26px;
+    background-image: url("/static/admin/img/tooltag-arrowright.svg");
+}

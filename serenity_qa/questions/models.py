@@ -76,6 +76,12 @@ class Video(models.Model):
         return ""
 
     @property
+    def short_url(self):
+        if self.code:
+            return f"https://youtu.be/{self.code}"
+        return ""
+
+    @property
     def embed_youtube_url(self):
         if self.code:
             return f"https://www.youtube.com/embed/{self.code}?enablejsapi=1"

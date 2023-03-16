@@ -22,17 +22,23 @@ from .models import (
 )
 from .tasks import video_dump_data
 from .widgets import DurationWidget
+from ..common.utils import format_link
 
 
 @admin.register(Video)
 class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = (
+        "id",
         "__str__",
-        "link",
+        "short_link",
         "published",
         "questions",
         "duration",
         "livechat_messages",
+    )
+    list_display_links = (
+        "id",
+        "__str__",
     )
     actions = (
         "download_metadata",
@@ -40,6 +46,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "import_metadata",
     )
     readonly_fields = (
+        "short_link",
         "link",
         "questions",
         "livechat_messages",
@@ -85,8 +92,11 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     livechat_messages.admin_order_field = "livechat_message_count"
     livechat_messages.short_description = "livechat"
 
+    def short_link(self, obj):
+        return format_link(obj.short_url)
+
     def link(self, obj):
-        return format_html("<a href='{url}'>{url}</a>", url=obj.url)
+        return format_link(obj.url, show_scheme=True)
 
     def audio(self, obj):
         audio_url = obj.audio_url()
@@ -155,8 +165,19 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "emoji", "serenity_emoji", "color", )
-    list_editable = ("color", )
+    list_display = (
+        "id",
+        "name",
+        "slug",
+        "emoji",
+        "serenity_emoji",
+        "color",
+    )
+    list_display_links = (
+        "id",
+        "name",
+    )
+    list_editable = ("color",)
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ("serenity_emoji_preview",)
 
@@ -196,11 +217,27 @@ class QuestionAudioAdmin(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionAudioAdmin]
     form = QuestionForm
-    list_display = ("__str__", "_timestamp_link", "duration", "_published", "_tags")
+    list_display = ("id", "__str__", "_timestamp_link", "duration", "_published", "_tags")
+    list_display_links = (
+        "id",
+        "__str__",
+    )
     list_filter = ("video", "tags")
     readonly_fields = ("_url", "duration", "created_on", "updated_on")
+    fields = (
+        "video",
+        ("timestamp", "duration"),
+        "question",
+        "tags",
+        "_url",
+        "created_on",
+        "updated_on",
+    )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
-    ordering = ("-id",)
+    ordering = (
+        "-video__published",
+        "-timestamp",
+    )
     actions = ("update_duration", "generate_audio")
 
     def _tags(self, obj):
@@ -240,8 +277,13 @@ class QuestionAdmin(admin.ModelAdmin):
 @admin.register(LiveChatMessage)
 class LiveChatMessageAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "__str__",
         "_published",
+    )
+    list_display_links = (
+        "id",
+        "__str__",
     )
 
     def _published(self, obj):
@@ -256,6 +298,7 @@ class LiveChatMessageAdmin(admin.ModelAdmin):
 @admin.register(YoutubePost)
 class YoutubePostAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "title",
         "published",
         "updated",
@@ -263,6 +306,7 @@ class YoutubePostAdmin(admin.ModelAdmin):
         "is_qa_video",
         "video_id",
     )
+    list_display_links = ("id", "title")
     readonly_fields = ("created_on", "updated_on", "is_qa_video", "video_id")
     actions = ["add_as_video"]
 
@@ -296,11 +340,16 @@ class YoutubePostAdmin(admin.ModelAdmin):
 @admin.register(ProgressReport)
 class ProgressReportAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "created_on",
         "videos_total",
         "questions_added",
         "percentage_added",
         "questions_remaining",
+    )
+    list_display_links = (
+        "id",
+        "created_on",
     )
     readonly_fields = (
         "created_on",

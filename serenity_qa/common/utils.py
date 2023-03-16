@@ -2,6 +2,7 @@ from traceback import format_exception_only
 
 import user_agents
 from django.urls import NoReverseMatch, reverse
+from django.utils.html import format_html
 
 suffixes = ["B", "KB", "MB", "GB", "TB", "PB"]
 
@@ -18,6 +19,7 @@ def humansize(nbytes):
 def discover_type(file):
     try:
         import magic
+
         file.seek(0)
         # "HOWMANY" constant in libmagic (bytes needed to find type): 65536
         mimetype = magic.from_buffer(file.read(65536), mime=True)
@@ -42,8 +44,15 @@ def get_object_admin_link(obj):
 
 
 def get_user_agent(request):
-    if not hasattr(request, 'META'):
-        return ''
-    ua_string = request.META.get('HTTP_USER_AGENT', '')
+    if not hasattr(request, "META"):
+        return ""
+    ua_string = request.META.get("HTTP_USER_AGENT", "")
     user_agent = user_agents.parse(ua_string)
     return user_agent
+
+
+def format_link(url, show_scheme=False):
+    display_url = url
+    if not show_scheme:
+        _, _, display_url = url.partition("://")
+    return format_html("<a href='{url}'>{display}</a>", url=url, display=display_url)

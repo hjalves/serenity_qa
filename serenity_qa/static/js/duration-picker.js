@@ -70,7 +70,8 @@
       setTimeout(() => {
         inputBox.focus();
         inputBox.select();
-        highlightTimeUnitArea(inputBox, 3600);
+        // highlight seconds by default
+        highlightTimeUnitArea(inputBox, 1);
       }, 1);
     }
   };

@@ -12,7 +12,7 @@
          href="{{ question.url }}">{{ question.timestamp }}</a>
     </div>
     <div class="content">
-      {{ question.question }}
+      {{ question.question | format_question }}
     </div>
   </div>
   <div class="question-footer">

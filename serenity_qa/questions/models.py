@@ -56,7 +56,7 @@ class Video(models.Model):
         return (self.published,)
 
     def get_absolute_url(self):
-        return reverse("video", args=(self.id,))
+        return reverse("video-detail", args=(self.published,))
 
     def question_count(self):
         if hasattr(self, "question__count"):

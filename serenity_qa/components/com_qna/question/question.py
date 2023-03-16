@@ -5,7 +5,11 @@ from serenity_qa.questions.models import Question
 
 @component.register("question")
 class QuestionComponent(component.Component):
-    template_name = "question/question.html"
+    template_name = "com_qna/question/question.html"
+
+    class Media:
+        css = "com_qna/question/question.css"
+        js = None
 
     def get_context_data(self, question=None, id=None, arguments=None):
         if arguments:
@@ -15,7 +19,3 @@ class QuestionComponent(component.Component):
             except Question.DoesNotExist:
                 question = None
         return {"question": question, "id": id or (question and question.element_id)}
-
-    class Media:
-        css = "question/question.css"
-        js = None

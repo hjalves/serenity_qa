@@ -11,7 +11,7 @@ RUN pip3 install -r /tmp/requirements.txt
 COPY . /app/
 WORKDIR /app/
 
-RUN ./manage.py collectstatic --noinput > /dev/null \
+RUN ./manage.py collectstatic --noinput --ignore=*.py --ignore=*.html > /dev/null \
   && useradd -d /app app && chown -R app:app /app \
   && echo "app ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/user
 USER app

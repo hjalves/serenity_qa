@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class VideoManager(models.Manager):
-    def get_by_natural_key(self, code, published):
-        return self.get(code=code, published=published)
+    def get_by_natural_key(self, published):
+        return self.get(published=published)
 
 
 class Video(models.Model):
@@ -49,10 +49,15 @@ class Video(models.Model):
                 last.refresh_duration()
 
     def natural_key(self):
-        return self.code, self.published
+        return (self.published,)
 
     def get_absolute_url(self):
         return reverse("video", args=(self.id,))
+
+    def question_count(self):
+        if hasattr(self, "question__count"):
+            return self.question__count
+        return self.question_set.count()
 
     def questions(self):
         return self.question_set.order_by("-timestamp")
@@ -205,7 +210,10 @@ class Tag(models.Model):
         return self.name
 
     def natural_key(self):
-        return self.slug,
+        return (self.slug,)
+
+    def question_count(self):
+        return self.question_set.count()
 
     def full_color(self):
         if self.color:
@@ -225,8 +233,8 @@ def question_audiofile_path(instance, filename):
 
 
 class QuestionManager(models.Manager):
-    def get_by_natural_key(self, code, published, timestamp):
-        return self.get(video__code=code, video__published=published, timestamp=timestamp)
+    def get_by_natural_key(self, published, timestamp):
+        return self.get(video__published=published, timestamp=timestamp)
 
 
 class Question(models.Model):
@@ -306,6 +314,9 @@ class Question(models.Model):
 
     def element_id(self):
         return str(self.timestamp)
+
+    def element_id_alt(self):
+        return f"{self.video.published}-{self.timestamp}"
 
     def get_previous(self):
         return self._get_next_or_previous_by_FIELD(

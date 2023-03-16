@@ -1,0 +1,89 @@
+.video-list {
+    background-color: white;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.video-list-body {
+    padding: 20px 40px;
+    align-items: center;
+    line-height: 1.5em;
+}
+
+.video-list-body .timestamp {
+    font-family: monospace;
+    float: left;
+    padding-right: 15px;
+    font-size: 1.0em;
+}
+
+.video-list-header {
+    font-size: 0.8em;
+    border-bottom: 1px solid #eee;
+    background: #f7f7f7;
+    text-align: center;
+    padding: 2px;
+}
+
+.video-list-header .title {
+    padding: 3px 5px;
+    color: #777;
+    border-bottom: none;
+    width: 100%;
+    /*font-weight: bold;*/
+    text-decoration: none;
+}
+
+.video-list-footer {
+    color: #777;
+    padding: 2px;
+    font-size: 0.8em;
+    text-align: center;
+    background: #f7f7f7;
+    border-top: 1px solid #eee;
+}
+
+.video-list dl {
+    font-size: 0.9em;
+    width: 100%;
+}
+
+.video-list dl dt {
+    color: #777;
+    border-bottom: 1px solid #eee;
+    line-height: 1.5em;
+    font-size: 0.9em;
+
+}
+
+.video-list dl dd {
+    text-align: left;
+    margin-left: 0;
+    margin-bottom: 1em;
+}
+
+.video-list dl > dd:last-child {
+    margin-bottom: 0;
+}
+
+.video-list table {
+    width: 100%;
+    font-size: 0.9em;
+    border-collapse: collapse;
+}
+
+.video-list table th {
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    padding: 1px 15px 4px 1px;
+}
+
+.video-list table th:last-child {
+    padding-right: 1px;
+}
+
+.video-list table td:not(:first-child), .video-list table th:not(:first-child) {
+    width: 0;
+    white-space: nowrap;
+}

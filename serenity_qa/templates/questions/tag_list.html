@@ -2,7 +2,5 @@
 {% load static questions_extras component_tags %}
 
 {% block content %}
-  {% for question in questions %}
-    {% component "question" question %}
-  {% endfor %}
+  {% component "tag_list" %}
 {% endblock %}

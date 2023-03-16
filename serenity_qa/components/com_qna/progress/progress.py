@@ -5,7 +5,11 @@ from serenity_qa.questions.models import ProgressReport
 
 @component.register("progress")
 class ProgressComponent(component.Component):
-    template_name = "progress/progress.html"
+    template_name = "com_qna/progress/progress.html"
+
+    class Media:
+        css = "com_qna/progress/progress.css"
+        js = None
 
     def get_context_data(self, id=None, arguments=None):
         if arguments and "id" in arguments:
@@ -25,7 +29,3 @@ class ProgressComponent(component.Component):
             "last_changed": last_changed,
             **indicators,
         }
-
-    class Media:
-        css = "progress/progress.css"
-        js = None

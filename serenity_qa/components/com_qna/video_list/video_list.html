@@ -1,0 +1,32 @@
+<article {% if id %}id="{{ id }}"{% endif %} class="video-list">
+  <div class="video-list-header">
+    <span class="title">Livestream Videos</span>
+  </div>
+  <div class="video-list-body">
+  <table>
+    <thead>
+      <tr>
+        <th>Livestream Video</th>
+        <th>Questions</th>
+        <th>Duration</th>
+        <th>Published</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for video in videos %}
+      <tr>
+        <td><a href="{% url 'video-detail' video.published %}">{{ video.title }}</a></td>
+        <td>{{ video.question_count }}</td>
+        <td>{{ video.duration }}</td>
+        <td>{{ video.published }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  </div>
+  <div class="video-list-footer">
+    <div>{{ video_count }} videos, {{ question_count }} questions.</div>
+    <div class="clear"></div>
+  </div>
+</article>

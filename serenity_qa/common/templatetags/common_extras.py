@@ -9,6 +9,11 @@ def navbar(context):
     from serenity_qa.questions.models import Video
 
     pages = Page.objects.published().order_by("-root_page", "title")
-    videos = Video.objects.all().filter(question__isnull=False).distinct()
+    videos = Video.objects.all().filter(question__isnull=False).distinct()[:8]
 
-    return {"videos": videos, "pages": pages, "self": context.get("self")}
+    return {
+        "videos": videos,
+        "pages": pages,
+        "self": context.get("self"),
+        "query": context.get("query"),
+    }

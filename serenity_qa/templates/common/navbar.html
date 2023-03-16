@@ -2,18 +2,35 @@
   <ul>
     <li class="title">SerenityOS Q&A</li>
     {% for page in pages %}
-      {% if not page.root_page %}{% url 'page' page.slug as page_url %}{% else %}{% url 'index' as page_url %}{% endif %}
-      <li><a href="{{ page_url }}" class="{% if self == page %}current{% endif %}">{{ page.title }}</a></li>
+      {% if not page.root_page %}{% url 'page' page.slug as page_url %}{% else %}
+        {% url 'index' as page_url %}{% endif %}
+      <li><a href="{{ page_url }}"
+             class="{% if self == page %}current{% endif %}">{{ page.title }}</a></li>
     {% endfor %}
   </ul>
   <ul>
-    <li class="title">Office hours</li>
+    <li class="title">Livestreams</li>
     {% for video in videos %}
-      <li><a href="{% url 'video' video.id %}" class="{% if self == video %}current{% endif %}">{{ video.published }}</a></li>
+      <li><a href="{% url 'video-detail' video.published %}"
+             class="{% if self == video %}current{% endif %}">{{ video.published }}</a>
+        <small>[{{ video.question_count }}]</small>
+      </li>
     {% endfor %}
+    <li><a href="{% url 'video-list' %}"
+           class="{% if self == 'video-list' %}current{% endif %}">See all videos...</a>
+    </li>
   </ul>
   <ul>
-    <li class="title">Search</li>
+    <li class="title">Tags</li>
+    <li><a href="{% url 'tag-list' %}"
+           class="{% if self == 'tag-list' %}current{% endif %}">See all tags...</a>
+    </li>
   </ul>
-  {#    <input type="text" id="search" name="search">#}
+  <form method="get" action="{% url 'search' %}">
+    <label for="query">Search</label>
+    <div class="inputs">
+      <input type="text" id="query" name="q" value="{{ query|default_if_none:"" }}">
+      <input type="submit" id="submit" value="Go">
+    </div>
+  </form>
 </nav>

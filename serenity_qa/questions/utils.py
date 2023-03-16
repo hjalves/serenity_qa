@@ -9,7 +9,8 @@ def serializer_format_to_mimetype(format):
         "json": "application/json",
         "jsonl": "application/jsonlines",
         "xml": "application/xml",
-        "yaml": "application/x-yaml",
+        "yaml": "text/yaml",
+        "kdl": "text/kdl",
     }
     return mimetypes.get(format, "text/plain")
 

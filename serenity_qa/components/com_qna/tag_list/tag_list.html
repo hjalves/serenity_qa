@@ -1,0 +1,30 @@
+<article {% if id %}id="{{ id }}"{% endif %} class="tag-list">
+  <div class="tag-list-header">
+    <span class="title">List of Tags</span>
+  </div>
+  <div class="tag-list-body">
+  <table>
+    <thead>
+      <tr>
+        <th>Tag</th>
+        <th>Description</th>
+        <th>Questions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tag in tags %}
+      <tr>
+        <td>{{ tag.emoji }} <a href="{% url 'tag-detail' tag.slug %}" {% if tag.quiet %}class="tag-quiet"{% endif %}>{{ tag.name }}</a></td>
+        <td>{{ tag.description }}</td>
+        <td>{{ tag.question_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  </div>
+  <div class="tag-list-footer">
+    <div>{{ tag_count }} tags.</div>
+    <div class="clear"></div>
+  </div>
+</article>

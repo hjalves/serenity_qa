@@ -87,3 +87,8 @@
     width: 0;
     white-space: nowrap;
 }
+
+.unfinished {
+    color: #822;
+    font-style: italic;
+}

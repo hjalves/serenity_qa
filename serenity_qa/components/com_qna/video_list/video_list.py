@@ -15,7 +15,6 @@ class VideoListComponent(component.Component):
     def get_context_data(self):
         videos = list(
             Video.objects.all()
-            .filter(question__isnull=False)
             .annotate(Count("question"))
             .order_by("-published")
         )

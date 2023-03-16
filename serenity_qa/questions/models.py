@@ -42,6 +42,10 @@ class Video(models.Model):
     def __str__(self):
         return self.title or self.code
 
+    @property
+    def emoji(self):
+        return "🎬"
+
     def save(self, *args, update_fields=None, **kwargs):
         super().save(*args, update_fields=update_fields, **kwargs)
         if not update_fields or "finished" in update_fields:

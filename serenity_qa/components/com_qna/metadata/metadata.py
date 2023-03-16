@@ -14,6 +14,7 @@ class MetadataComponent(component.Component):
         video = kw.get("video")
         if video:
             context["id"] = "metadata"
+            context["emoji"] = video.emoji
             context["title"] = video.title
             context["url"] = video.url
             context["duration"] = video.duration

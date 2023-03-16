@@ -21,7 +21,7 @@
     font-size: 0.8em;
     border-bottom: 1px solid #ddd;
     /*background: #a99; */
-    background: linear-gradient(70deg, #666 0%, #bbb 100%);
+    background: linear-gradient(70deg, #777 0%, #bbb 100%);
     align-items: center;
     color: #FFF;
     text-shadow: 1px 1px #0004;
@@ -29,7 +29,7 @@
 }
 
 .metadata-header:hover {
-    background: linear-gradient(70deg, #555 0%, #888 100%);
+    background: linear-gradient(70deg, #666 0%, #888 100%);
 }
 
 .metadata-header a {

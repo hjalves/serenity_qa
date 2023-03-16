@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.helpers import AdminForm
+from django.contrib.admin.widgets import AdminTextareaWidget
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Count, OuterRef, Subquery
@@ -234,7 +235,10 @@ class QuestionAdmin(admin.ModelAdmin):
         "created_on",
         "updated_on",
     )
-    formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
+    formfield_overrides = {
+        models.DurationField: {"widget": DurationWidget},
+        models.TextField: {"widget": AdminTextareaWidget({"rows": 4})},
+    }
     ordering = (
         "-video__published",
         "-timestamp",

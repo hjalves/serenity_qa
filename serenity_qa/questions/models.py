@@ -217,7 +217,7 @@ class Tag(models.Model):
         ordering = ("name",)
 
     def __str__(self):
-        return self.name
+        return f"{self.emoji} {self.name}"
 
     def natural_key(self):
         return (self.slug,)
@@ -354,7 +354,8 @@ class Question(models.Model):
 
     @property
     def emoji(self):
-        return '❔'
+        return "❔"
+
 
 class QuestionAudio(models.Model):
     question = models.OneToOneField(Question, on_delete=models.CASCADE)

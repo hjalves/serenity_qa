@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% block extrastyle %}{{ block.super }}
+<style>
+.aligned label {
+    width: 190px;
+}
+.aligned label + p, .aligned label + div.help, .aligned label + div.readonly {
+    margin-left: 200px;
+}
+</style>
+{% endblock %}

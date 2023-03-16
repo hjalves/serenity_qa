@@ -4,7 +4,7 @@
   <div class="question-header">
     <a class="title" href="{{ video_url }}#{{ question.element_id }}"><span class="emoji">{{ question.emoji }}</span>{{ question.video.title }}</a>
     <a class="duration" title="Duration"
-       href="{{ video_url }}#{{ question.element_id }}">{{ question.duration|format_duration|default:"--" }}</a>
+       href="{{ video_url }}#{{ question.element_id }}"><span class="emoji">{{ question.duration_emoji }}</span>{{ question.duration|format_duration|default:"--" }}</a>
   </div>
   <div class="question-body">
     <div class="timestamp">

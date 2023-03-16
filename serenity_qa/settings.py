@@ -61,6 +61,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_components.middleware.ComponentDependencyMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "serenity_qa.common.middleware.UserAgentMiddleware",
 ]
 
 ROOT_URLCONF = "serenity_qa.urls"

@@ -111,6 +111,7 @@ main.content {
 }
 
 .emoji {
+    display: inline-block;
     font-family: "SerenityOS Emoji", sans-serif;
     margin-right: 2px;
 }

@@ -1,5 +1,6 @@
 from traceback import format_exception_only
 
+import user_agents
 from django.urls import NoReverseMatch, reverse
 
 suffixes = ["B", "KB", "MB", "GB", "TB", "PB"]
@@ -38,3 +39,11 @@ def get_object_admin_link(obj):
         )
     except NoReverseMatch:
         return None
+
+
+def get_user_agent(request):
+    if not hasattr(request, 'META'):
+        return ''
+    ua_string = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = user_agents.parse(ua_string)
+    return user_agent

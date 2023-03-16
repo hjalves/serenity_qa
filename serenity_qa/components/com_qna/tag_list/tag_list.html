@@ -14,7 +14,7 @@
     <tbody>
       {% for tag in tags %}
       <tr>
-        <td>{{ tag.emoji }} <a href="{% url 'tag-detail' tag.slug %}" {% if tag.quiet %}class="tag-quiet"{% endif %}>{{ tag.name }}</a></td>
+        <td><span class="emoji">{{ tag.emoji }}</span><a href="{% url 'tag-detail' tag.slug %}" {% if tag.quiet %}class="tag-quiet"{% endif %}>{{ tag.name }}</a></td>
         <td>{{ tag.description }}</td>
         <td>{{ tag.question_count }}</td>
       </tr>

@@ -15,7 +15,7 @@
     <tbody>
       {% for video in videos %}
       <tr>
-        <td>{{ video.emoji }} <a href="{% url 'video-detail' video.published %}">{{ video.title }}</a></td>
+        <td><span class="emoji">{{ video.emoji }}</span><a href="{% url 'video-detail' video.published %}">{{ video.title }}</a></td>
         <td><span {% if not video.finished %}class="unfinished" title="Unfinished!" {% endif %}>{{ video.question_count }}</span> </td>
         <td>{{ video.duration }}</td>
         <td>{{ video.published }}</td>

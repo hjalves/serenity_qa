@@ -127,7 +127,11 @@ tomli==2.0.1
     #   pyproject-hooks
 tzdata==2022.7
     # via django-celery-beat
-uvicorn==0.21.0
+ua-parser==0.16.1
+    # via user-agents
+user-agents==2.2.0
+    # via -r requirements.in
+uvicorn==0.21.1
     # via -r requirements.in
 vine==5.0.0
     # via

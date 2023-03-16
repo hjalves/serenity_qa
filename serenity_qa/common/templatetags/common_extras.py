@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -17,3 +18,12 @@ def navbar(context):
         "self": context.get("self"),
         "query": context.get("query"),
     }
+
+@register.simple_tag(name="load_emoji_fonts", takes_context=True)
+def load_emoji_fonts(context):
+    request = context['request']
+    ua = request.user_agent
+    if "Safari" in ua.browser.family:
+        return ""
+    href = "https://linusg.github.io/serenityos-emoji-font/SerenityOS-Emoji.css"
+    return mark_safe(f'<link href="{href}" rel="stylesheet">')

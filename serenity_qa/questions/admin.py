@@ -60,7 +60,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(
-            question_count=Count("question", distinct=True),
+            question__count=Count("question", distinct=True),
             livechat_message_count=Count("livechatmessage", distinct=True),
         )
         return qs
@@ -72,10 +72,10 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
                 reverse("admin:questions_question_changelist") + "?" + urlencode(params)
             )
             return format_html(
-                "<a href='{url}'>{count}</a>", url=query_url, count=obj.question_count
+                "<a href='{url}'>{count}</a>", url=query_url, count=obj.question__count
             )
 
-    questions.admin_order_field = "question_count"
+    questions.admin_order_field = "question__count"
 
     def livechat_messages(self, obj):
         if obj.id:

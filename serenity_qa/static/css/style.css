@@ -71,9 +71,29 @@ aside nav .inputs input[type=text] {
     width: 0;
     flex: 1;
     margin-right: 5px;
-    min-height: 1.2em;
+    font-size: 0.8em;
+    min-height: 1.3em;
+    border: 1px solid #ddd;
+    padding-left: 2px;
 }
 
+aside nav .inputs input[type=text]:hover {
+    border: 1px solid #aaa;
+}
+
+aside nav input[type=submit] {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    color: #777;
+    font-size: 0.8em;
+    font-weight: normal;
+    padding: 0 5px;
+}
+
+aside nav input[type=submit]:hover {
+    border: 1px solid #aaa;
+    color: #444
+}
 
 aside nav form {
     margin: 20px 0;

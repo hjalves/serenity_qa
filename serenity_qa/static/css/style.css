@@ -103,6 +103,11 @@ main.content {
     line-height: 1.5em;
 }
 
+.page ul, .page ol {
+    padding-left: 25px;
+}
+
+
 .footer {
     padding: 20px 40px;
     background-color: white;

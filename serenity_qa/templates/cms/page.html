@@ -2,14 +2,14 @@
 {% load static cms_extras component_tags %}
 
 {% block content %}
-  <article class="page">
+  <article class="page" id="page">
     {{ page.content | markdown }}
   </article>
   {% for section in page.enabled_sections %}
     {% component section.component arguments=section.arguments %}
   {% endfor %}
   {% if page.footer %}
-    <article class="footer">
+    <article class="page" id="footer">
       {{ page.footer | markdown }}
     </article>
   {% endif %}

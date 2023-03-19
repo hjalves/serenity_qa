@@ -11,6 +11,10 @@ a {
     color: #222;
 }
 
+.title a {
+    color: #777;
+}
+
 a:hover {
     text-decoration-thickness: 2px;
     font-weight: bold;
@@ -19,6 +23,7 @@ a:hover {
 
 a.current {
     font-weight: bold;
+    color: #222;
 }
 
 
@@ -51,6 +56,7 @@ aside nav li {
     margin-left: 0;
     font-size: 0.9em;
     margin-top: 0.5em;
+    /*white-space: nowrap;*/
 }
 
 aside nav li.title, aside nav label {
@@ -58,6 +64,11 @@ aside nav li.title, aside nav label {
     text-transform: uppercase;
     font-size: 0.8em;
     margin: 0 0 1em 0;
+    color: #777;
+}
+
+aside nav li.title:hover, aside nav label:hover {
+    color: #222;
 }
 
 aside nav .inputs {
@@ -100,7 +111,7 @@ aside nav form {
 }
 
 aside nav label {
-    display: block;
+    display: inline-block;
 }
 
 aside nav small {
@@ -143,4 +154,54 @@ main.content {
 
 abbr[title] {
     text-decoration: underline dotted 1px;
+}
+
+/* Mobile */
+
+@media (max-width: 767px) {
+
+    aside {
+        position: static;
+        width: auto;
+        margin: 20px 20px 10px 20px;
+    }
+
+    aside nav {
+        display: flex;
+        margin: 0;
+        flex-wrap: wrap;
+        padding: 20px 20px 0 20px;
+    }
+
+    main.content {
+        margin: 10px 20px 20px 20px;
+    }
+
+    aside nav ul {
+        flex: 10 100px;
+        text-align: center;
+        margin: 0 0 20px;
+    }
+
+    aside nav li.title {
+        padding-right: 5px;
+        height: 2.4em;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        margin: 0
+    }
+
+    aside nav .search {
+        flex: 1 150px;
+        text-align: center;
+        line-height: 0.8em;
+        margin: 0 0 20px;
+        padding: 0 10px;
+    }
+
+    .responsive-hide {
+        display: none;
+    }
+
 }

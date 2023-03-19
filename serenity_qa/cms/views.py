@@ -19,7 +19,16 @@ class PageView(TemplateView):
 
     def get_context_data(self, page=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        if not page:
+            context["in_root"] = True
         kwargs = {"root_page": True} if not page else {"slug": page}
         page = get_object_or_404(Page.objects.published(), **kwargs)
         context["self"] = context["page"] = page
+        return context
+
+class GuestBookView(TemplateView):
+    template_name = "cms/guestbook.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         return context

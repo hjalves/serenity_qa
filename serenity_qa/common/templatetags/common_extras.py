@@ -2,10 +2,12 @@ import datetime
 
 from django import template
 from django.core.cache import cache
+from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
+from serenity_qa.questions.models import Tag
 from serenity_qa.questions.utils import get_or_set_tag_colors_version
 
 register = template.Library()
@@ -18,12 +20,16 @@ def navbar(context):
 
     pages = Page.objects.published().order_by("-root_page", "title")
     videos = Video.objects.all().filter(question__isnull=False).distinct()[:8]
+    tags = Tag.objects.all().order_by('-id')[:5]
 
     return {
         "videos": videos,
+        "tags": tags,
         "pages": pages,
         "self": context.get("self"),
         "query": context.get("query"),
+        "in_root": context.get("in_root"),
+        "max_responsive": 4
     }
 
 

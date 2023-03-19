@@ -13,6 +13,7 @@ from .components.question_list import views as question_list_views
 urlpatterns = [
     path("", cms_views.PageView.as_view(), name="index"),
     path("tag-colors.css", questions_views.TagsCSSView.as_view(), name="tag-colors"),
+    path("guestbook/", cms_views.GuestBookView.as_view(), name="guestbook"),
     path("search/", questions_views.SearchView.as_view(), name="search"),
     path("tags/", questions_views.TagListView.as_view(), name="tag-list"),
     path("tags/<slug:slug>/", questions_views.TagDetailView.as_view(), name="tag-detail"),

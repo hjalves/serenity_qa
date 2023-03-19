@@ -1,32 +1,35 @@
 <nav>
   <ul>
-    <li class="title">SerenityOS Q&A</li>
+    <li class="title"><a href="{% url 'index' %}" class="{% if in_root %}current{% endif %}">SerenityOS Q&A</a></li>
     {% for page in pages %}
-      {% if not page.root_page %}{% url 'page' page.slug as page_url %}{% else %}
-        {% url 'index' as page_url %}{% endif %}
-      <li><a href="{{ page_url }}"
-             class="{% if self == page %}current{% endif %}">{{ page.title }}</a></li>
-    {% endfor %}
-  </ul>
-  <ul>
-    <li class="title">Livestreams</li>
-    {% for video in videos %}
-      <li><a href="{% url 'video-detail' video.published %}"
-             class="{% if self == video %}current{% endif %}">{{ video.published }}</a>
-        <small>[{{ video.question_count }}]</small>
+      {% if not page.root_page %}{% url 'page' page.slug as page_url %}{% else %}{% url 'index' as page_url %}{% endif %}
+      <li class="{% if forloop.counter > max_responsive %}responsive-hide{% endif %}">
+        <a href="{{ page_url }}"
+           class="{% if self == page %}current{% endif %}">{{ page.title }}</a>
       </li>
     {% endfor %}
-    <li><a href="{% url 'video-list' %}"
-           class="{% if self == 'video-list' %}current{% endif %}">See all videos...</a>
+      <li><a href="{% url 'guestbook' %}" class="{% if self == 'guestbook' %}current{% endif %}">Guestbook</a>
     </li>
   </ul>
   <ul>
-    <li class="title">Tags</li>
-    <li><a href="{% url 'tag-list' %}"
-           class="{% if self == 'tag-list' %}current{% endif %}">See all tags...</a>
-    </li>
+    <li class="title"><a href="{% url 'video-list' %}" class="{% if self == 'video-list' %}current{% endif %}">Livestreams</a></li>
+    {% for video in videos %}
+      <li class="{% if forloop.counter > max_responsive %}responsive-hide{% endif %}">
+        <a href="{% url 'video-detail' video.published %}"
+           class="{% if self == video %}current{% endif %}">{{ video.published }}</a>
+      </li>
+    {% endfor %}
   </ul>
-  <form method="get" action="{% url 'search' %}">
+  <ul>
+    <li class="title"><a href="{% url 'tag-list' %}" class="{% if self == 'tag-list' %}current{% endif %}">Tags</a></li>
+    {% for tag in tags %}
+      <li class="{% if forloop.counter > max_responsive %}responsive-hide{% endif %}">
+        <a href="{% url 'tag-detail' tag.slug %}"
+           class="{% if self == tag %}current{% endif %}">{{ tag.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <form method="get" action="{% url 'search' %}" class="search">
     <label for="query">Search</label>
     <div class="inputs">
       <input type="text" id="query" name="q" value="{{ query|default_if_none:"" }}">

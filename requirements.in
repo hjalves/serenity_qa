@@ -16,6 +16,7 @@ ffmpeg==1.4
 gunicorn>=20.1.0
 markdown>=3.4.1
 pip-tools>=6.12.2
+pydrive2~=1.15.1
 python-json-logger>=2.0.4
 python-magic>=0.4.27
 pyyaml>=6.0

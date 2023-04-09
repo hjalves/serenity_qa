@@ -1,8 +1,10 @@
 from collections import defaultdict
+import pprint
 
 from django.conf import settings
-from django.contrib.admin import AdminSite
+from django.contrib.admin import AdminSite, ModelAdmin
 from django.contrib.admin.apps import AdminConfig
+from django.utils.html import format_html
 
 
 class MyAdminConfig(AdminConfig):
@@ -17,8 +19,20 @@ class MyAdminSite(AdminSite):
     def __init__(self, *a, **kw):
         from django.contrib.sessions.models import Session
 
+        class SessionAdmin(ModelAdmin):
+            def _session_data(self, obj):
+                formatted = pprint.pformat(obj.get_decoded())
+                return format_html("<pre>{}</pre>", formatted)
+
+            _session_data.short_description = "Session data"
+
+            list_display = ["session_key", "expire_date"]
+            readonly_fields = ["_session_data"]
+            exclude = ["session_data"]
+            date_hierarchy = "expire_date"
+
         super().__init__(*a, **kw)
-        self.register(Session)
+        self.register(Session, SessionAdmin)
 
     def each_context(self, request):
         context = super().each_context(request)

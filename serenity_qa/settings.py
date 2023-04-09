@@ -107,6 +107,8 @@ DATABASES = {
     }
 }
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
 SQLITE_TIMEOUT = getenv("SQLITE_TIMEOUT")
 if SQLITE_TIMEOUT:
     DATABASES["default"]["OPTIONS"] = {"timeout": int(SQLITE_TIMEOUT)}

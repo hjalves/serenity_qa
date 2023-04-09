@@ -5,11 +5,17 @@ from time import sleep
 
 from celery import shared_task
 from django.conf import settings
+from django.core.management import call_command
 from django.db import connection
 from django.utils import timezone
 
 from serenity_qa.common.gdrive import init_google_drive
 from serenity_qa.common.jobs import JobTask
+
+
+@shared_task
+def clear_sessions():
+    return call_command('clearsessions')
 
 
 @shared_task(bind=True, base=JobTask, description="Progress Test Task")

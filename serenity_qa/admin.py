@@ -14,6 +14,12 @@ class MyAdminSite(AdminSite):
     site_header = "SerenityOS Q&A"
     index_title = "Administration"
 
+    def __init__(self, *a, **kw):
+        from django.contrib.sessions.models import Session
+
+        super().__init__(*a, **kw)
+        self.register(Session)
+
     def each_context(self, request):
         context = super().each_context(request)
         available_apps = self.customize_sidebar(context["available_apps"])

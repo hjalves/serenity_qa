@@ -1,0 +1,15 @@
+{% load questions_extras %}
+<article class="guestbook-message">
+  {% url 'video-detail' question.video.published as video_url %}
+  <div class="guestbook-message-header">
+    <a class="title"><span class="flag">{{ message.display_flag }}</span> {{ message.display_name }}</a>
+    <a class="posted-on"><span class="flag">{{ message.created_on | date:"j M Y, H:i:s e" }}</span></a>
+  </div>
+  <div class="guestbook-message-body">
+    <div class="message-avatar">{{ message.avatar.image_tag | safe }}</div>
+    <div class="message-content">{{ message.message }}</div>
+  </div>
+  <div class="guestbook-message-footer">
+    <div class="footer-posted-on">{% if not message.hide_user_agent %}Posted from {{ message.display_user_agent }}{% else %}-{% endif %}</div>
+  </div>
+</article>

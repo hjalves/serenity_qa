@@ -1,0 +1,112 @@
+.guestbook-message {
+    background: white;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.guestbook-message-body {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    /*min-height: 3em;*/
+    line-height: 1.5em;
+}
+
+.guestbook-message-body .message-avatar {
+    flex: 0 1 98px;
+    vertical-align: top;
+    margin-right: 20px;
+    min-width: 64px;
+}
+
+.guestbook-message-body .message-avatar img {
+    max-width: 100%;
+    display: block;
+    margin: 1px auto;
+    border: 1px solid #eee;
+}
+
+
+.guestbook-message-body .message-content {
+    font-family: "SerenityOS Emoji", arial, helvetica, sans-serif;
+    flex: 1 0 70%;
+}
+
+.guestbook-message-header {
+    display: flex;
+    font-size: 0.8em;
+    border-bottom: 1px solid #ddd;
+    background: #bbb;
+    align-items: center;
+    color: #FFF;
+    text-shadow: 1px 1px #0002;
+    line-height: 1.2em;
+}
+
+.guestbook-message-header:hover {
+    background: #888;
+}
+
+.guestbook-message-header a {
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.guestbook-message:target .guestbook-message-header {
+    background: #666;
+}
+
+.guestbook-message-header .title {
+    padding: 3px 5px;
+    color: #FFF;
+    flex-grow: 1;
+}
+
+.guestbook-message-header .posted-on {
+    padding: 3px 5px;
+    color: #FFF;
+    flex-shrink: 0;
+    height: 100%;
+}
+
+
+.guestbook-message-footer {
+    color: #999;
+    font-size: 0.8em;
+    text-align: center;
+    background: #f7f7f7;
+    border-top: 1px solid #eee;
+    padding: 2px;
+}
+
+.clear {
+    clear: both;
+}
+
+.tag {
+    display: inline-block;
+    padding: 1px 5px;
+    background: #80808080;
+    color: #FFF;
+    border-bottom: none;
+    margin-left: 2px;
+    border-radius: 2px;
+    text-shadow: 1px 1px #0002;
+    text-decoration: none;
+}
+
+.tag:hover {
+    color: #FFF;
+    font-weight: normal;
+    text-decoration: none;
+    background: #808080FF;
+    border-bottom: none;
+}
+
+.quiet {
+    opacity: 0.6;
+}
+
+.guestbook-message:target {
+    opacity: 1.0;
+}

@@ -1,0 +1,9 @@
+{% extends "common/base.html" %}
+{% load static cms_extras component_tags %}
+
+{% block content %}
+  {% component "guestbook_form" form %}
+  {% for message in messages %}
+    {% component "guestbook_message" message %}
+  {% endfor %}
+{% endblock %}

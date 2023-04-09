@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Project
     "serenity_qa.common",
     "serenity_qa.cms",
+    "serenity_qa.guestbook",
     "serenity_qa.questions",
     "serenity_qa.admin.MyAdminConfig",
 ]
@@ -159,7 +160,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "Europe/Lisbon"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -169,7 +170,7 @@ USE_TZ = True
 
 # Datetime formats
 
-DATETIME_FORMAT = "Y-m-d H:i:s"
+DATETIME_FORMAT = "Y-m-d H:i:s e"
 DATE_FORMAT = "Y-m-d"
 TIME_FORMAT = "H:i"
 SHORT_DATE_FORMAT = "Y-m-d"

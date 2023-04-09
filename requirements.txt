@@ -50,7 +50,7 @@ colorlog==6.7.0
     # via -r requirements.in
 cron-descriptor==1.2.35
     # via django-celery-beat
-cryptography==40.0.0
+cryptography==40.0.1
     # via pyopenssl
 django==4.1.7
     # via
@@ -66,11 +66,13 @@ django-celery-beat==2.5.0
     # via -r requirements.in
 django-colorfield==0.8.0
     # via -r requirements.in
-django-components==0.26.1
+django-components==0.26.2
     # via -r requirements.in
 django-extensions==3.2.1
     # via -r requirements.in
 django-htmx==1.14.0
+    # via -r requirements.in
+django-ipware==5.0.0
     # via -r requirements.in
 django-object-actions==4.1.0
     # via -r requirements.in
@@ -86,9 +88,9 @@ ffmpeg==1.4
     # via -r requirements.in
 google-api-core==2.11.0
     # via google-api-python-client
-google-api-python-client==2.82.0
+google-api-python-client==2.83.0
     # via pydrive2
-google-auth==2.16.3
+google-auth==2.17.1
     # via
     #   google-api-core
     #   google-api-python-client
@@ -110,7 +112,7 @@ idna==3.4
     # via requests
 kombu==5.2.4
     # via celery
-markdown==3.4.1
+markdown==3.4.3
     # via -r requirements.in
 mutagen==1.46.0
     # via yt-dlp
@@ -118,8 +120,10 @@ oauth2client==4.1.3
     # via pydrive2
 packaging==23.0
     # via build
-pillow==9.4.0
-    # via django-colorfield
+pillow==9.5.0
+    # via
+    #   -r requirements.in
+    #   django-colorfield
 pip-tools==6.12.3
     # via -r requirements.in
 prompt-toolkit==3.0.38
@@ -141,9 +145,9 @@ pycparser==2.21
     # via cffi
 pycryptodomex==3.17
     # via yt-dlp
-pydrive2==1.15.1
+pydrive2==1.15.2
     # via -r requirements.in
-pyopenssl==23.1.0
+pyopenssl==23.1.1
     # via pydrive2
 pyparsing==3.0.9
     # via httplib2
@@ -157,7 +161,7 @@ python-json-logger==2.0.7
     # via -r requirements.in
 python-magic==0.4.27
     # via -r requirements.in
-pytz==2022.7.1
+pytz==2023.3
     # via
     #   celery
     #   django-timezone-field
@@ -165,7 +169,7 @@ pyyaml==6.0
     # via
     #   -r requirements.in
     #   pydrive2
-redis==4.5.1
+redis==4.5.4
     # via -r requirements.in
 requests==2.28.2
     # via google-api-core
@@ -189,7 +193,7 @@ tomli==2.0.1
     # via
     #   build
     #   pyproject-hooks
-tzdata==2022.7
+tzdata==2023.3
     # via django-celery-beat
 ua-parser==0.16.1
     # via user-agents
@@ -210,7 +214,7 @@ wcwidth==0.2.6
     # via prompt-toolkit
 webencodings==0.5.1
     # via bleach
-websockets==10.4
+websockets==11.0
     # via yt-dlp
 wheel==0.40.0
     # via pip-tools

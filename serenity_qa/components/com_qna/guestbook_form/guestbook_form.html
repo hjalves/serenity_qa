@@ -1,0 +1,37 @@
+<article id="{{ id }}" class="guestbook">
+  <div class="guestbook-header">
+    <span class="title">Sign the guestbook</span>
+  </div>
+  <div class="guestbook-body">
+    <form class="guestbook-form" method="post">
+    {% csrf_token %}
+    <div id="avatar" class="avatar">
+      {{ form.avatar.label_tag }}
+      {{ form.avatar.initial.image_tag }}
+      {{ form.avatar }}
+    </div>
+    <div class="fields">
+      <div class="field field-name">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+      </div>
+      <div class="field field-flag">
+        {{ form.flag.label_tag }}
+        {{ form.flag }}
+      </div>
+      <div class="field field-message">
+        {{ form.message.label_tag }}
+        {{ form.message }}
+      </div>
+      <div class="submit-row">
+        <label title="e.g.: Ladybird on SerenityOS">
+          {{ form.hide_user_agent }}<span>{{ form.hide_user_agent.label }}</span>
+        </label>
+        <input type="submit" value="Post message!"
+               title="After posting, you'll be able to edit or remove the message">
+      </div>
+    </div>
+    </form>
+  </div>
+  <div class="guestbook-footer"></div>
+</article>

@@ -1,0 +1,179 @@
+.guestbook {
+    background: white;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.guestbook-body {
+    padding: 10px 30px;
+    align-items: center;
+    line-height: 1.5em;
+}
+
+.guestbook-body .timestamp {
+    font-family: monospace;
+    float: left;
+    padding-right: 15px;
+    font-size: 1.0em;
+}
+
+.guestbook-header {
+    font-size: 0.8em;
+    border-bottom: 1px solid #eee;
+    background: #f7f7f7;
+    text-align: center;
+    padding: 2px;
+}
+
+.guestbook-header .title {
+    padding: 3px 5px;
+    color: #777;
+    border-bottom: none;
+    width: 100%;
+    /*font-weight: bold;*/
+    text-decoration: none;
+}
+
+.guestbook-footer {
+    color: #aaa;
+    padding: 2px;
+    font-size: 0.8em;
+    text-align: center;
+    background: #f7f7f7;
+    border-top: 1px solid #eee;
+    min-height: 10px;
+}
+
+dl.guestbook-status {
+    font-size: 0.9em;
+    width: 100%;
+}
+
+dl.guestbook-status dt {
+    color: #777;
+    border-bottom: 1px solid #eee;
+    line-height: 1.5em;
+    font-size: 0.9em;
+
+}
+
+dl.guestbook-status dd {
+    text-align: left;
+    margin-left: 0;
+    margin-bottom: 1em;
+}
+
+dl.guestbook-status > dd:last-child {
+    margin-bottom: 0;
+}
+
+.guestbook-body {
+    font-size: 0.9em;
+}
+
+.guestbook-form {
+    display: flex;
+}
+
+.avatar {
+    flex: 0 1 130px;
+    vertical-align: top;
+    margin-right: 20px;
+    margin-bottom: 5px;
+    min-width: 64px;
+}
+
+.fields {
+    flex: 1 0 70%;
+    vertical-align: top;
+    position: relative;
+}
+
+.field {
+    display: inline-block;
+    vertical-align: top;
+    margin-bottom: 5px;
+}
+
+.field-name {
+    margin-right: 10px;
+}
+
+.field-message {
+    display: block;
+    margin-bottom: 25px;
+}
+
+.field-flag select {
+    width: 100%;
+}
+
+.field-message textarea {
+    width: 98%;
+    margin-bottom: 10px;
+}
+
+
+.guestbook label {
+    font-size: 0.9em;
+    color: #777;
+    display: block;
+    /*margin-top: 5px;*/
+}
+
+
+.avatar img {
+    display: block;
+    margin: 1px auto;
+    border: 1px solid #eee;
+    max-width: 100%;
+}
+
+.avatar select {
+    margin-top: 5px;
+    width: 100%;
+}
+
+input, textarea, select {
+    border: 1px solid #ddd;
+    color: #777;
+    font-weight: normal;
+    border-radius: 0;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+input:hover, textarea:hover, select:hover {
+    border: 1px solid #aaa;
+    color: #444
+}
+
+.submit-row {
+    margin-top: 5px;
+    text-align: right;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 5px;
+}
+
+.submit-row label {
+    float: left;
+}
+
+.submit-row label span {
+    vertical-align: sub;
+}
+
+.submit-row label input {
+    vertical-align: text-top;
+}
+
+.submit-row input[type="submit"] {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 2px 5px;
+}

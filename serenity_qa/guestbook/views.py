@@ -14,21 +14,32 @@ class GuestBookView(FormView):
     success_url = reverse_lazy("guestbook")
 
     def get_context_data(self, **kwargs):
-        # self.request.session["test"] = "wtv"
-        self.request.session.save()
         context = super().get_context_data(**kwargs)
-        context["messages"] = GuestBookMessage.objects.order_by('-created_on')
+        context["messages"] = GuestBookMessage.objects.order_by("-created_on")
         return context
 
     def get_initial(self):
-        return {}
+        initial = {}
+        for key in ("name", "flag", "hide_user_agent"):
+            if key in self.request.session:
+                initial[key] = self.request.session[key]
+        if "avatar" in self.request.session:
+            avatar = Avatar.objects.filter(slug=self.request.session["avatar"]).first()
+            if avatar:
+                initial["avatar"] = avatar
+        return initial
 
     def form_valid(self, form):
         instance = form.save()
+        for key in ("name", "flag", "hide_user_agent"):
+            self.request.session[key] = form.cleaned_data[key]
+        self.request.session["avatar"] = form.cleaned_data["avatar"].slug
+        self.request.session.save()
         user_agent = getattr(self.request, "user_agent", None)
         ip_address = getattr(self.request, "ip_address", None)
         instance.user_agent = user_agent.ua_string[:500] if user_agent else ""
         instance.ip_address = ip_address
+        instance.session_key = self.request.session.session_key
         instance.save()
         return super().form_valid(form)
 

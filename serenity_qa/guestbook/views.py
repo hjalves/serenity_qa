@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -15,7 +16,11 @@ class GuestBookView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["messages"] = GuestBookMessage.objects.order_by("-created_on")
+        filter_q = Q(hide=False)
+        if session_key := self.request.session.session_key:
+            filter_q |= Q(session_key=session_key)
+        queryset = GuestBookMessage.objects.filter(filter_q).order_by("-created_on")
+        context["messages"] = queryset
         return context
 
     def get_initial(self):
@@ -30,7 +35,7 @@ class GuestBookView(FormView):
         return initial
 
     def form_valid(self, form):
-        instance = form.save()
+        instance = form.save(commit=False)
         for key in ("name", "flag", "hide_user_agent"):
             self.request.session[key] = form.cleaned_data[key]
         self.request.session["avatar"] = form.cleaned_data["avatar"].slug

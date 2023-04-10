@@ -56,6 +56,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     )
     formfield_overrides = {models.DurationField: {"widget": DurationWidget}}
     change_actions = ("timestamp_questions", "dumpdata")
+    date_hierarchy = "published"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -244,6 +245,7 @@ class QuestionAdmin(admin.ModelAdmin):
         "-timestamp",
     )
     actions = ("update_duration", "generate_audio")
+    date_hierarchy = "video__published"
 
     def _tags(self, obj):
         return ", ".join(map(str, obj.tags.all()))
@@ -330,6 +332,7 @@ class YoutubePostAdmin(admin.ModelAdmin):
     list_display_links = ("id", "title")
     readonly_fields = ("created_on", "updated_on", "is_qa_video", "video_id")
     actions = ["add_as_video"]
+    date_hierarchy = "published"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -376,6 +379,7 @@ class ProgressReportAdmin(admin.ModelAdmin):
         "created_on",
         "indicators",
     )
+    date_hierarchy = "created_on"
 
     def percentage_added(self, obj):
         return obj.indicators.get("percentage_added")

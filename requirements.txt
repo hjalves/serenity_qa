@@ -52,7 +52,7 @@ cron-descriptor==1.2.35
     # via django-celery-beat
 cryptography==40.0.1
     # via pyopenssl
-django==4.1.7
+django==4.1.8
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -66,7 +66,7 @@ django-celery-beat==2.5.0
     # via -r requirements.in
 django-colorfield==0.8.0
     # via -r requirements.in
-django-components==0.26.2
+django-components==0.26.3
     # via -r requirements.in
 django-extensions==3.2.1
     # via -r requirements.in
@@ -88,9 +88,9 @@ ffmpeg==1.4
     # via -r requirements.in
 google-api-core==2.11.0
     # via google-api-python-client
-google-api-python-client==2.83.0
+google-api-python-client==2.84.0
     # via pydrive2
-google-auth==2.17.1
+google-auth==2.17.2
     # via
     #   google-api-core
     #   google-api-python-client
@@ -110,6 +110,8 @@ httplib2==0.22.0
     #   oauth2client
 idna==3.4
     # via requests
+kdl-py==1.1.0
+    # via -r requirements.in
 kombu==5.2.4
     # via celery
 markdown==3.4.3
@@ -124,7 +126,7 @@ pillow==9.5.0
     # via
     #   -r requirements.in
     #   django-colorfield
-pip-tools==6.12.3
+pip-tools==6.13.0
     # via -r requirements.in
 prompt-toolkit==3.0.38
     # via click-repl
@@ -145,7 +147,7 @@ pycparser==2.21
     # via cffi
 pycryptodomex==3.17
     # via yt-dlp
-pydrive2==1.15.2
+pydrive2==1.15.3
     # via -r requirements.in
 pyopenssl==23.1.1
     # via pydrive2
@@ -214,7 +216,7 @@ wcwidth==0.2.6
     # via prompt-toolkit
 webencodings==0.5.1
     # via bleach
-websockets==11.0
+websockets==11.0.1
     # via yt-dlp
 wheel==0.40.0
     # via pip-tools

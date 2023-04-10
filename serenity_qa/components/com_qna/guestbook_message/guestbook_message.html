@@ -1,8 +1,7 @@
 {% load questions_extras %}
-<article class="guestbook-message">
-  {% url 'video-detail' question.video.published as video_url %}
+<article class="guestbook-message{% if message.hide %} quiet{% endif %}">
   <div class="guestbook-message-header">
-    <a class="title"><span class="flag">{{ message.display_flag }}</span> {{ message.display_name }}</a>
+    <a class="title"><span class="flag">{{ message.display_flag }}</span> {{ message.display_name }}{% if message.hide %} (Message hidden){% endif %}</a>
     <a class="posted-on"><span class="flag">{{ message.created_on | date:"j M Y, H:i:s e" }}</span></a>
   </div>
   <div class="guestbook-message-body">

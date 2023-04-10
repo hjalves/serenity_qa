@@ -211,7 +211,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Serializers
 
-# SERIALIZATION_MODULES = {'kdl': 'serenity_qa.common.serializers.kdl'}
+SERIALIZATION_MODULES = {"kdl": "serenity_qa.common.serializers.kdl"}
 
 
 # Logging

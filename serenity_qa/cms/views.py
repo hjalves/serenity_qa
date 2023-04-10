@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
@@ -25,3 +26,7 @@ class PageView(TemplateView):
         page = get_object_or_404(Page.objects.published(), **kwargs)
         context["self"] = context["page"] = page
         return context
+
+
+class DebugView(TemplateView):
+    template_name = "cms/debug.html"

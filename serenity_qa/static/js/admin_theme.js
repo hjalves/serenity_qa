@@ -32,7 +32,7 @@
 
         function setupTheme() {
             // Attach event handlers for toggling themes
-            const buttons = document.getElementsByClassName("theme-toggle");
+            const buttons = document.getElementsByClassName("custom-theme-toggle");
             Array.from(buttons).forEach((btn) => {
                 btn.addEventListener("click", cycleTheme);
             });

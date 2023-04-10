@@ -52,7 +52,7 @@ cron-descriptor==1.2.35
     # via django-celery-beat
 cryptography==40.0.1
     # via pyopenssl
-django==4.1.8
+django==4.2
     # via
     #   -r requirements.in
     #   django-celery-beat

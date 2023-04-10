@@ -1,4 +1,4 @@
-Django~=4.1.7
+Django~=4.2.0
 bleach>=6.0.0
 celery>=5.2.7
 colorlog>=6.7.0
@@ -26,5 +26,5 @@ pyyaml>=6.0
 redis>=4.5.1
 user-agents>=2.2.0
 uvicorn>=0.20.0
-whitenoise==6.4.0
+whitenoise>=6.4.0
 yt-dlp>=2023.2.17

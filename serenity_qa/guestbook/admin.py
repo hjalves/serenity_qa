@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
 
 from serenity_qa.guestbook.models import GuestBookMessage, Avatar
 

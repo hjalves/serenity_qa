@@ -1,0 +1,40 @@
+/* THEME SWITCH */
+.custom-theme-toggle {
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: transparent;
+    vertical-align: middle;
+    margin-inline-start: 5px;
+    margin-top: -1px;
+}
+
+.custom-theme-toggle svg {
+    vertical-align: middle;
+    height: 1rem;
+    width: 1rem;
+    display: none;
+}
+
+html[data-theme="dark"] .custom-theme-toggle .theme-label-when-dark {
+    display: block;
+}
+
+html[data-theme="light"] .custom-theme-toggle .theme-label-when-light {
+    display: block;
+}
+
+/* ICONS */
+.custom-theme-toggle svg.theme-icon-when-dark,
+.custom-theme-toggle svg.theme-icon-when-light {
+    fill: var(--header-link-color);
+    color: var(--header-bg);
+}
+
+html[data-theme="dark"] .custom-theme-toggle svg.theme-icon-when-dark {
+    display: block;
+}
+
+html[data-theme="light"] .custom-theme-toggle svg.theme-icon-when-light {
+    display: block;
+}

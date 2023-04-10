@@ -6,11 +6,7 @@
 {% endblock %}
 
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" href="{% static 'css/admin_theme.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom_admin.css' %}">
+<link rel="stylesheet" href="{% static 'css/theme_switch.css' %}">
 <link rel="stylesheet" href="{% static 'fonts/SerenityOS-Emoji.css' %}">
-{% endblock %}
-
-{% block userlinks %}
-{{ block.super }}
-{% include "admin/includes/color_theme_toggle.html" %}
 {% endblock %}

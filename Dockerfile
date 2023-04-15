@@ -1,4 +1,5 @@
-FROM python:3.11
+# Celery requires Python 3.10, for now
+FROM python:3.10
 ENV PYTHONUNBUFFERED=1 PORT=8000
 EXPOSE 8000
 

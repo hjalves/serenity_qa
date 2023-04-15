@@ -17,7 +17,6 @@ class Serializer(base.Serializer):
 
     def start_object(self, obj):
         self._properties = {"model": str(obj._meta)}
-        print(self._properties)
         if not self.use_natural_primary_keys or not hasattr(obj, "natural_key"):
             if (obj_pk := obj.pk) is not None:
                 self._properties["pk"] = self._serialize(obj_pk)

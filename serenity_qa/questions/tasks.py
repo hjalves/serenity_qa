@@ -183,7 +183,7 @@ def generate_progress_report():
 @shared_task()
 def database_export(tar_path="database.tar.gz", data_format="json", extra=None):
     serializer_extra = {}
-    if data_format == "json":
+    if data_format in ("json", "kdl"):
         serializer_extra = {"indent": 2}
     serializer_extra.update(extra or {})
 
@@ -197,7 +197,7 @@ def database_export(tar_path="database.tar.gz", data_format="json", extra=None):
         ".xz": "w:xz",
     }[tar_path.suffix]
 
-    assert data_format in ("json", "jsonl", "xml", "yaml")
+    assert data_format in ("json", "jsonl", "xml", "yaml", "kdl")
     file_mode = "w+t"
     if data_format == "xml":
         file_mode = "w+b"

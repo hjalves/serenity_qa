@@ -1,7 +1,9 @@
 import user_agents
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.gis.geoip2 import GeoIP2
 from django.db import models
 from django.utils.safestring import mark_safe
+from geoip2.errors import AddressNotFoundError
 
 from serenity_qa.guestbook.flags import FLAG_MODEL_CHOICES, get_flag_emoji
 from serenity_qa.questions.models import Question
@@ -55,6 +57,13 @@ class GuestBookMessage(models.Model):
 
     def parsed_user_agent(self):
         return user_agents.parse(self.user_agent)
+
+    def ip_address_country_code(self):
+        geoip = GeoIP2()
+        try:
+            return geoip.country_code(self.ip_address)
+        except AddressNotFoundError:
+            return None
 
     def display_name(self):
         return self.name or "Anonymous pal"

@@ -107,6 +107,8 @@ DATABASES = {
     }
 }
 
+GEOIP_PATH = BASE_DIR / "database" / "geoip"
+
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 SQLITE_TIMEOUT = getenv("SQLITE_TIMEOUT")

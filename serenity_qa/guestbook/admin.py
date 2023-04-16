@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.contrib.gis.geoip2 import GeoIP2Exception
 
+from serenity_qa.common.utils import format_exception
 from serenity_qa.guestbook.models import GuestBookMessage, Avatar
 
 
@@ -8,6 +10,7 @@ class GuestBookMessageAdmin(admin.ModelAdmin):
     list_display = ("id", "__str__", "flag", "ip_address", "hide", "created_on")
     list_display_links = ("id", "__str__")
     readonly_fields = (
+        "ip_address_country_code",
         "user_agent",
         "parsed_user_agent",
         "created_on",
@@ -16,6 +19,14 @@ class GuestBookMessageAdmin(admin.ModelAdmin):
 
     def parsed_user_agent(self, obj):
         return obj.parsed_user_agent()
+
+    def ip_address_country_code(self, obj):
+        try:
+            return obj.ip_address_country_code() or "-"
+        except GeoIP2Exception as e:
+            return "[Error] %s" % format_exception(e)
+
+    ip_address_country_code.short_description = "IP country code"
 
 
 @admin.register(Avatar)

@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.core.files import File
 from django.db import models
+from django.db.models import Sum
 from django.urls import reverse
 from colorfield.fields import ColorField
 
@@ -224,6 +225,10 @@ class Tag(models.Model):
 
     def question_count(self):
         return self.question_set.count()
+
+    def total_duration(self):
+        qs = self.question_set.values('duration')
+        return qs.aggregate(Sum('duration'))['duration__sum']
 
     def full_color(self):
         if self.color:

@@ -1,10 +1,10 @@
-.metadata {
+.tag-info {
     background: white;
     border: 1px solid #ddd;
     margin-bottom: 10px;
 }
 
-.metadata-body {
+.tag-info-body {
     padding: 10px 10px;
     display: flex;
     flex-wrap: wrap;
@@ -12,11 +12,7 @@
     line-height: 1.5em;
 }
 
-
-.metadata-body .content {
-}
-
-.metadata-header {
+.tag-info-header {
     display: flex;
     font-size: 0.8em;
     border-bottom: 1px solid #ddd;
@@ -28,27 +24,27 @@
     line-height: 1.2em;
 }
 
-.metadata-header:hover {
+.tag-info-header:hover {
     background: linear-gradient(70deg, #666 0%, #888 100%);
 }
 
-.metadata-header a {
+.tag-info-header a {
     color: #FFF;
     text-decoration: none;
     font-weight: bold;
 }
 
-.metadata-header .title:hover {
+.tag-info-header .title:hover {
     color: #FFF;
     border-bottom: none;
 }
 
-.metadata-header .title {
+.tag-info-header .title {
     padding: 3px 5px;
     flex-grow: 1;
 }
 
-.metadata-header .subtitle {
+.tag-info-header .subtitle {
     color: #FFF;
     border-bottom: none;
     text-shadow: 1px 1px #0002;
@@ -57,33 +53,33 @@
     flex-shrink: 0;
 }
 
-.metadata-footer {
+.tag-info-footer {
     font-size: 0.8em;
     align-items: center;
     background: #f7f7f7;
     border-top: 1px solid #eee;
 }
 
-.metadata-body dl {
+.tag-info-body dl {
     font-size: 0.9em;
     width: 100%;
     margin: 0 0 0.5em;
 }
 
-.metadata-body dl dt {
+.tag-info-body dl dt {
     color: #777;
     border-bottom: 1px solid #eee;
     line-height: 1.5em;
     font-size: 0.9em;
 }
 
-.metadata-body dl dd {
+.tag-info-body dl dd {
     text-align: left;
     margin-left: 0;
     margin-bottom: 0.5em;
 }
 
-.metadata-body dl > dd:last-child {
+.tag-info-body dl > dd:last-child {
     margin-bottom: 0;
 }
 

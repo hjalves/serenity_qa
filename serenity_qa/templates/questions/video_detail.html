@@ -2,7 +2,7 @@
 {% load static questions_extras component_tags %}
 
 {% block content %}
-  {% component "metadata" video=video %}
+  {% component "video_info" video=video %}
   {% for question in questions %}
     {% component "question" question %}
   {% endfor %}

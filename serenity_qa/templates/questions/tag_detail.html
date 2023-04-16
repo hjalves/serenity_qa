@@ -2,6 +2,7 @@
 {% load static questions_extras component_tags %}
 
 {% block content %}
+  {% component "tag_info" tag=tag %}
   {% for question in questions %}
     {% component "question" question id=question.element_id_alt %}
   {% endfor %}

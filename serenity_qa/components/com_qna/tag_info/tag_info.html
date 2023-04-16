@@ -1,0 +1,28 @@
+{% load questions_extras %}
+<section id="{{ id }}" class="tag-info">
+  <div class="tag-info-header">
+    <a class="title" href="#{{ id }}"><span class="emoji">{{ emoji }}</span>{{ name }}</a>
+    <a class="subtitle" href="#{{ id }}">Tag</a>
+  </div>
+  <div class="tag-info-body">
+    {% if description %}
+      <dl>
+        <dt>Description</dt>
+        <dd>{{ description }}</dd>
+      </dl>
+    {% endif %}
+    <dl class="half">
+      <dt>Tag name</dt>
+      <dd>{{ name }}</dd>
+      <dt>Total duration</dt>
+      <dd>{{ duration | default:"--" }}</dd>
+    </dl>
+    <dl class="half">
+      <dt>Timestamped</dt>
+      <dd>{{ questions }} <abbr title="May also be comments or sections">questions</abbr></dd>
+      <dt>Export to...</dt>
+      <dd><a href="?format=json">JSON</a>, <a href="?format=kdl">KDL</a> or <a
+          href="?format=xml">XML</a></dd>
+    </dl>
+  </div>
+</section>

@@ -20,7 +20,7 @@ def navbar(context):
 
     pages = Page.objects.published().order_by("-root_page", "title")
     videos = Video.objects.all().filter(question__isnull=False).distinct()[:8]
-    tags = Tag.objects.all().order_by('-id')[:5]
+    tags = Tag.objects.all().order_by("-id")[:5]
 
     return {
         "videos": videos,
@@ -29,7 +29,7 @@ def navbar(context):
         "self": context.get("self"),
         "query": context.get("query"),
         "in_root": context.get("in_root"),
-        "max_responsive": 4
+        "max_responsive": 4,
     }
 
 

@@ -118,7 +118,7 @@ class Job(models.Model):
     def job_log(self):
         log = self.attachments.filter(category=JobAttachment.CATEGORY_LOG).first()
         if log:
-            with log.file.open('rt') as f:
+            with log.file.open("rt") as f:
                 return [json.loads(line) for line in f]
         return self.job_log_redis_handler().get_job_log()
 

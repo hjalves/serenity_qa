@@ -1,0 +1,25 @@
+{% load questions_extras %}
+<section id="{{ id }}" class="search-info">
+  <div class="search-info-header">
+    <a class="title" href="#{{ id }}"><span class="emoji">{{ emoji }}</span>Search for: {{ query }}</a>
+    <a class="subtitle" href="#{{ id }}">Search results</a>
+  </div>
+  <div class="search-info-body">
+    <dl>
+      <dt>Search query</dt>
+      <dd>{{ query }}</dd>
+    </dl>
+    <dl class="half">
+      <dt>Number of results</dt>
+      <dd>{{ results }}</dd>
+    </dl>
+    <dl class="half">
+      <dt>Export to...</dt>
+      <dd>
+        <a href="?{{ query_urlencode }}&format=json">JSON</a>,
+        <a href="?{{ query_urlencode }}&format=kdl">KDL</a> or
+        <a href="?{{ query_urlencode }}&format=xml">XML</a>
+      </dd>
+    </dl>
+  </div>
+</section>

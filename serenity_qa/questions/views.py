@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 from django.views.generic import TemplateView
 
-from .models import Video, Tag
+from .models import Video, Tag, Question
 from .utils import serializer_format_to_mimetype
 
 
@@ -88,7 +88,7 @@ class TagDetailView(TemplateView):
 
     def get_context_data(self, **kwargs):
         kw = super().get_context_data(**kwargs)
-        tag = get_object_or_404(Tag, slug=kwargs['slug'])
+        tag = get_object_or_404(Tag, slug=kwargs["slug"])
         kw["questions"] = tag.question_set.order_by("-video__published", "-timestamp")
         kw["tag"] = kw["self"] = tag
         return kw
@@ -100,5 +100,8 @@ class SearchView(TemplateView):
 
     def get_context_data(self, **kwargs):
         kw = super().get_context_data(**kwargs)
-        kw['query'] = self.request.GET.get('q')
+        query = kw["query"] = self.request.GET.get("q")
+        qs = Question.objects.search(query)
+        kw["questions"] = qs
+        kw["results"] = qs.count()
         return kw

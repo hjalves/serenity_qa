@@ -227,8 +227,8 @@ class Tag(models.Model):
         return self.question_set.count()
 
     def total_duration(self):
-        qs = self.question_set.values('duration')
-        return qs.aggregate(Sum('duration'))['duration__sum']
+        qs = self.question_set.values("duration")
+        return qs.aggregate(Sum("duration"))["duration__sum"]
 
     def full_color(self):
         if self.color:
@@ -250,6 +250,9 @@ def question_audiofile_path(instance, filename):
 class QuestionManager(models.Manager):
     def get_by_natural_key(self, published, timestamp):
         return self.get(video__published=published, timestamp=timestamp)
+
+    def search(self, term):
+        return self.filter(question__contains=term)
 
 
 class Question(models.Model):

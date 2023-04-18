@@ -15,7 +15,7 @@ from serenity_qa.common.jobs import JobTask
 
 @shared_task
 def clear_sessions():
-    return call_command('clearsessions')
+    return call_command("clearsessions")
 
 
 @shared_task(bind=True, base=JobTask, description="Progress Test Task")

@@ -7,11 +7,7 @@ class GuestbookFormComponent(component.Component):
 
     class Media:
         css = "com_qna/guestbook_form/guestbook_form.css"
-        js = (
-            "js/htmx.min.js"
-        )
+        js = "js/htmx.min.js"
 
     def get_context_data(self, form):
-        return {
-            'form': form
-        }
+        return {"form": form}

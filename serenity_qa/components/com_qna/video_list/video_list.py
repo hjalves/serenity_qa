@@ -14,9 +14,7 @@ class VideoListComponent(component.Component):
 
     def get_context_data(self):
         videos = list(
-            Video.objects.all()
-            .annotate(Count("question"))
-            .order_by("-published")
+            Video.objects.all().annotate(Count("question")).order_by("-published")
         )
         video_count = len(videos)
         question_count = sum(v.question_count() for v in videos)

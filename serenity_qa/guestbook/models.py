@@ -48,7 +48,7 @@ class GuestBookMessage(models.Model):
     class Meta:
         verbose_name = "message"
         verbose_name_plural = "messages"
-        ordering = ('-created_on', )
+        ordering = ("-created_on",)
 
     def __str__(self):
         name = self.name or "<Anon>"

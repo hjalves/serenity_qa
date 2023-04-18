@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from markdown import Markdown
 
 register = template.Library()
-md = Markdown(extensions=["markdown.extensions.fenced_code", 'smarty'])
+md = Markdown(extensions=["markdown.extensions.fenced_code", "smarty"])
 
 
 @register.filter()

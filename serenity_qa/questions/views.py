@@ -12,7 +12,27 @@ def home(request):
     return HttpResponse("<h1>Page was found</h1>")
 
 
-class VideoDetailView(TemplateView):
+class ExportMixin:
+    def export(self, data_format="json", **kwargs):
+        context = self.get_context_data(**kwargs)
+        serialized = serializers.serialize(
+            data_format,
+            self.export_queryset(context),
+            use_natural_foreign_keys=True,
+            use_natural_primary_keys=True,
+            indent=2,
+        )
+        content_type = serializer_format_to_mimetype(data_format)
+        return HttpResponse(serialized, content_type=content_type)
+
+    def get(self, request, *args, **kwargs):
+        data_format = (request.GET.get("format") or "").lower()
+        if data_format in ("json", "jsonl", "xml", "yaml", "kdl"):
+            return self.export(data_format, **kwargs)
+        return super().get(request, *args, **kwargs)
+
+
+class VideoDetailView(ExportMixin, TemplateView):
     template_name = "questions/video_detail.html"
 
     def get_video(self, video_key):
@@ -34,33 +54,9 @@ class VideoDetailView(TemplateView):
         kw["video"] = kw["self"] = video
         return kw
 
-    def get(self, request, *args, **kwargs):
-        data_format = (request.GET.get("format") or "").lower()
-        if data_format in ("json", "jsonl", "xml", "yaml", "kdl"):
-            return self.export(data_format, **kwargs)
-        return super().get(request, *args, **kwargs)
-
-    def export(self, data_format="json", **kwargs):
-        assert data_format in ("json", "jsonl", "xml", "yaml", "kdl")
-
-        context = self.get_context_data(**kwargs)
-        video = context["video"]
-        questions = context["questions"]
-
-        def queryset():
-            yield video
-            yield from questions
-
-        serialized = serializers.serialize(
-            data_format,
-            queryset(),
-            use_natural_foreign_keys=True,
-            use_natural_primary_keys=True,
-            indent=2,
-        )
-
-        content_type = serializer_format_to_mimetype(data_format)
-        return HttpResponse(serialized, content_type=content_type)
+    def export_queryset(self, context):
+        yield context["video"]
+        yield from context["questions"]
 
 
 class TagsCSSView(TemplateView):
@@ -83,7 +79,7 @@ class TagListView(TemplateView):
     extra_context = {"self": "tag-list"}
 
 
-class TagDetailView(TemplateView):
+class TagDetailView(ExportMixin, TemplateView):
     template_name = "questions/tag_detail.html"
 
     def get_context_data(self, **kwargs):
@@ -93,15 +89,22 @@ class TagDetailView(TemplateView):
         kw["tag"] = kw["self"] = tag
         return kw
 
+    def export_queryset(self, context):
+        yield context["tag"]
+        yield from context["questions"]
 
-class SearchView(TemplateView):
+
+class SearchView(ExportMixin, TemplateView):
     template_name = "questions/search.html"
     extra_context = {"self": "search"}
 
     def get_context_data(self, **kwargs):
         kw = super().get_context_data(**kwargs)
         query = kw["query"] = self.request.GET.get("q")
-        qs = Question.objects.search(query)
+        qs = Question.objects.search(query).order_by("-video__published", "-timestamp")
         kw["questions"] = qs
         kw["results"] = qs.count()
         return kw
+
+    def export_queryset(self, context):
+        yield from context["questions"]

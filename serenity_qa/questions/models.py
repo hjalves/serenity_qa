@@ -238,6 +238,9 @@ class Tag(models.Model):
         if self.color:
             return f"{self.color}80"
 
+    def get_absolute_url(self):
+        return reverse("tag-detail", args=(self.slug,))
+
 
 def question_audiofile_path(instance, filename):
     return "questions/{0}/{1}-{2}s.opus".format(

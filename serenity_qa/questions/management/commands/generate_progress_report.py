@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = "Update RSS feed"
 
     def add_arguments(self, parser):
-        pass
+        parser.add_argument("--force", action="store_true")
 
     def handle(self, *args, **options):
-        generate_progress_report()
+        generate_progress_report(options["force"])

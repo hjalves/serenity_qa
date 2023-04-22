@@ -1,7 +1,9 @@
 import json
 from os.path import basename
 
+import requests
 from celery.result import AsyncResult
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -173,3 +175,41 @@ class JobAttachment(models.Model):
     def url(self):
         if self.file:
             return self.file.url
+
+
+class Notification(models.Model):
+    username = models.CharField(max_length=100, blank=True)
+    channel = models.CharField(max_length=50, blank=True)
+    icon_emoji = models.CharField(max_length=50, blank=True)
+    text = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+    sent_on = models.DateTimeField(null=True, blank=True, editable=False)
+
+    class Meta:
+        verbose_name = "notification"
+        verbose_name_plural = "notifications"
+
+    def __str__(self):
+        short_text = (self.text[:40] + "...") if len(self.text) >= 40 else self.text
+        return f"{self.username}: {short_text}"
+
+    def send(self):
+        payload = {"text": self.text}
+        if self.username:
+            payload["username"] = self.username
+        if self.channel:
+            payload["channel"] = self.channel
+        if self.icon_emoji:
+            payload["icon_emoji"] = self.icon_emoji
+
+        response = requests.post(settings.SLACK_WEBHOOK, json=payload)
+        response.raise_for_status()
+
+        self.sent_on = timezone.now()
+        self.save(update_fields=["sent_on"])
+
+    def send_async(self):
+        from .tasks import send_notification
+
+        return send_notification.delay(self.id)

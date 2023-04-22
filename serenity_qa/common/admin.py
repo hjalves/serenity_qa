@@ -9,7 +9,7 @@ from django_object_actions import DjangoObjectActions
 from .admin_realtime import ModelAdminRealtime, autoupdate
 from .decorators import action_view
 from .forms import DumpDataForm
-from .models import Job, JobAttachment
+from .models import Job, JobAttachment, Notification
 from .utils import humansize
 
 
@@ -162,3 +162,18 @@ class JobAdmin(DjangoObjectActions, ModelAdminRealtime):
             "adminform": admin_form,
             "content": "Will dump data",
         }
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ("id", "__str__", "channel", "created_on", "sent_on")
+    list_display_links = (
+        "id",
+        "__str__",
+    )
+    readonly_fields = ("created_on", "updated_on", "sent_on")
+    actions = ("send",)
+
+    def send(self, request, queryset):
+        for notification in queryset:
+            notification.send()

@@ -278,6 +278,13 @@ YOUTUBE_RSS = (
     "https://www.youtube.com/feeds/videos.xml?channel_id=UC3ts8coMP645hZw9JSD3pqQ"
 )
 
+SLACK_WEBHOOK = getenv(
+    "SLACK_WEBHOOK",
+    "https://hooks.slack.com/services/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",
+)
+SLACK_CHANNEL = getenv("SLACK_CHANNEL", "#serenity-qa-test")
+SLACK_USERNAME = getenv("SLACK_USERNAME", "SerenityOS Q&A")
+
 # Backups
 
 DRIVE_SERVICE_ACCOUNT_JSON = getenv("DRIVE_SERVICE_ACCOUNT_JSON")

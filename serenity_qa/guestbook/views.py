@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView
 
+from serenity_qa.common.notifications import send_notification
 from serenity_qa.guestbook.forms import GuestBookMessageForm
 from serenity_qa.guestbook.models import Avatar, GuestBookMessage
 
@@ -46,6 +47,7 @@ class GuestBookView(FormView):
         instance.ip_address = ip_address
         instance.session_key = self.request.session.session_key
         instance.save()
+        send_notification(f"New message: {instance}", username="Guestbook")
         return super().form_valid(form)
 
     def form_invalid(self, form):

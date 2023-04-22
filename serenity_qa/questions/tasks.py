@@ -12,6 +12,7 @@ from django.core import serializers
 from django.utils import timezone
 
 from serenity_qa.common.jobs import JobTask
+from serenity_qa.common.notifications import send_notification
 from serenity_qa.questions import progress
 from serenity_qa.questions.download import youtube_dl_download
 from serenity_qa.questions.dumpdata import (
@@ -146,7 +147,7 @@ def update_feed():
 
 
 @shared_task()
-def generate_progress_report():
+def generate_progress_report(force=False):
     logger.info("Generating progress report...")
     try:
         questions_total_expected, questions_interval = progress.estimate_questions()
@@ -173,9 +174,14 @@ def generate_progress_report():
     except ProgressReport.DoesNotExist:
         previous_indicators = {}
 
-    if previous_indicators != indicators:
+    if previous_indicators != indicators or force:
         logger.info("Will create a new progress report...")
         ProgressReport.objects.create(indicators=indicators)
+        added, tagged = indicators["percentage_added"], indicators["percentage_tagged"]
+        send_notification(
+            f"New progress report: {added}% added, {tagged}% tagged",
+            username="Progress report",
+        )
     else:
         logger.info("The previous one is the same. Will not do anything.")
 

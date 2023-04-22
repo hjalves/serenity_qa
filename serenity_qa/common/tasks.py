@@ -11,6 +11,7 @@ from django.utils import timezone
 
 from serenity_qa.common.gdrive import init_google_drive
 from serenity_qa.common.jobs import JobTask
+from serenity_qa.common.models import Notification
 
 
 @shared_task
@@ -68,3 +69,9 @@ def backup_sqlite_task(folder_id=None):
     file.Upload()
 
     print("Backup done.")
+
+
+@shared_task()
+def send_notification(notification_id):
+    notification = Notification.objects.get(id=notification_id)
+    notification.send()

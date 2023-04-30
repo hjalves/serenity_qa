@@ -38,6 +38,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         "duration",
         "livechat_messages",
     )
+    list_filter = ("finished", "published")
     list_display_links = (
         "id",
         "__str__",

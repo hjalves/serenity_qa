@@ -15,6 +15,7 @@ WORKDIR /app/
 COPY --chown=app:app . .
 
 USER app
-RUN ./manage.py collectstatic --noinput --ignore=*.py --ignore=*.html
+# collectstatic needs some SECRET_KEY; this one exists only for this build step
+RUN SECRET_KEY=collectstatic-only ./manage.py collectstatic --noinput --ignore=*.py --ignore=*.html
 
 CMD ["gunicorn", "serenity_qa.wsgi:application"]
